@@ -7,7 +7,8 @@ values
 -- TODO Define values here
 instance variables
 -- TODO Define instance variables here
-	private register: set of Person;
+	private register: set of Person
+	;
 	private voters: set of Person;
 operations
 -- TODO Define operations here
