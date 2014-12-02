@@ -1,0 +1,7 @@
+class TestElection is subclass of MyTestCase
+
+operations
+
+
+			 
+end TestElection

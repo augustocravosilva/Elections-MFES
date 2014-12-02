@@ -1,19 +1,43 @@
 class Election
+
 types
 	public Person = token;
-	
+	public Candidate = seq1 of char;
 	
 values
 -- TODO Define values here
+
 instance variables
--- TODO Define instance variables here
-	private register: set of Person
-	;
-	private voters: set of Person;
+	private register: set of Person := {};
+	private voters: set of Person := {};
+	private candidates: set of Candidate := {} ;
+	private votes: map Candidate to nat := { |-> };
+	inv dom votes = candidates;
+	
 operations
--- TODO Define operations here
+	
+	public Election: () ==> Election
+		Election() == 
+			return self;
+
+	public setCandidates: set of Candidate ==> ()
+		setCandidates(cand) ==
+			candidates := cand ;
+			
+	public setRegister: set of Person ==> ()
+		setRegister(reg) ==
+			register := reg;
+			
+	public vote: Person * Candidate ==> ()
+		vote(person, candidate) == (
+			votes := votes ++ {candidate |-> votes(candidate) + 1 } ;
+			voters := voters union {person} )
+	pre person in set register and
+		person not in set voters
+	post person in set voters;
+	
+	
 functions
 -- TODO Define functiones here
-traces
--- TODO Define Combinatorial Test Traces here
+
 end Election
