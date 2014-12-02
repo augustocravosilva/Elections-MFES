@@ -12,7 +12,7 @@ instance variables
 	private voters: set of Person := {};
 	private candidates: set of Candidate := {} ;
 	private votes: map Candidate to nat := { |-> };
-	--inv dom votes = candidates;
+	inv dom votes = candidates;
 	
 operations
 	
