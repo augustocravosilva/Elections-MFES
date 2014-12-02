@@ -1,0 +1,45 @@
+class TestElection is subclass of MyTestCase
+
+operations
+
+ -- Entry point that runs all tests with valid inputs
+  public testAll: () ==> ()
+  	testAll() == (
+  		testVoteScn();
+  );
+  
+  public ConfigureScn: map Election`Candidate to nat1 * set of Election`Person ==> Election
+  	ConfigureScn(candidates, people) == (
+  		dcl election : Election := new Election();
+				|| ( election.setCandidates(candidates),
+	       		election.setRegister(people));
+	     return election;
+  	);
+  
+  public testVoteScn: () ==> ()
+		testVoteScn() == (
+		
+		dcl a: Election`Person := mk_token(1);
+		dcl	b: Election`Person := mk_token(2);
+		dcl	election: Election := ConfigureScn({"a" |-> 0,"b" |-> 0}, {a, b});
+		
+		election.vote(a, "a");
+		election.vote(b, "b");
+	/*
+		dcl inserted : nat := 0;
+		dcl deliveredProd : [seq of char] := nil;
+		dcl change : MoneyUtils`BagOfCoins := {|->};		
+		for all c in set dom coins do
+			for all - in set {1 , ..., coins(c)} do (
+				vm.insertCoin(c);
+				inserted := inserted + c;
+				assertEqual(inserted, vm.amountInserted)
+      );      		
+    vm.selectProduct(prod);    
+    || (deliveredProd := vm.pickProduct(), 
+    	  if MoneyUtils`sum(coins) > vm.products(prod).price then 
+    	  	change := vm.pickChange());
+    return mk_(deliveredProd, change)*/
+	);
+			
+end TestElection

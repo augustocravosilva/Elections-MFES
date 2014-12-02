@@ -25,7 +25,21 @@ operations
 		
 		election.vote(a, "a");
 		election.vote(b, "b");
-		
-		);
+	/*
+		dcl inserted : nat := 0;
+		dcl deliveredProd : [seq of char] := nil;
+		dcl change : MoneyUtils`BagOfCoins := {|->};		
+		for all c in set dom coins do
+			for all - in set {1 , ..., coins(c)} do (
+				vm.insertCoin(c);
+				inserted := inserted + c;
+				assertEqual(inserted, vm.amountInserted)
+      );      		
+    vm.selectProduct(prod);    
+    || (deliveredProd := vm.pickProduct(), 
+    	  if MoneyUtils`sum(coins) > vm.products(prod).price then 
+    	  	change := vm.pickChange());
+    return mk_(deliveredProd, change)*/
+	);
 			
 end TestElection
