@@ -3,9 +3,6 @@ class Election
 types
 	public Person = token;
 	public Candidate = seq1 of char;
-	
-values
--- TODO Define values here
 
 instance variables
 	private register: set of Person := {};
@@ -45,8 +42,16 @@ operations
 		person not in set voters
 	post person in set voters;
 	
+	-- TODO: Ver se a pessoa é valida e autorizar votação
+	-- public validateVoter: () ==> ()
+		--validateVoter() == ();
+		
+	-- TODO: registar o voto da pessoa sem associar na mesma função voto + pessoa
+	-- public doVote: () ==> ()
+		-- doVote() == ();
 	
-functions
--- TODO Define functiones here
-
+	-- TODO: opção de cancelar/mudar voto
+	
+	-- TODO: fecho das votações e eleição de candidato
+	
 end Election
