@@ -1,0 +1,23 @@
+class VotingMachine
+
+types
+	public Status = <Off> | <Ready> | <OnVoting> | <End>;
+	public MachineCard = Card;
+
+values
+-- TODO Define values here
+
+instance variables
+	public status : Status := <Off>; 
+	public mcard : Card;
+
+operations
+-- TODO Define operations here
+
+functions
+-- TODO Define functiones here
+
+traces
+-- TODO Define Combinatorial Test Traces here
+
+end VotingMachine

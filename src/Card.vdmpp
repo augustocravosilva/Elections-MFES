@@ -1,0 +1,21 @@
+class Card
+
+types
+	public Candidate = seq1 of char;
+
+values
+-- TODO Define values here
+
+instance variables
+	private votes: map Candidate to nat := { |-> };
+	
+operations
+-- TODO Define operations here
+
+functions
+-- TODO Define functiones here
+
+traces
+-- TODO Define Combinatorial Test Traces here
+
+end Card

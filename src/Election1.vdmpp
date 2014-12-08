@@ -1,0 +1,23 @@
+class Election1
+
+types
+	public Person = token;
+	public official = ElectoralOfficial;
+	
+values
+-- TODO Define values here
+
+instance variables
+	private electoralRegister: map Person to bool := {|->};
+	private officials: set of official := {};
+
+operations
+-- TODO Define operations here
+
+functions
+-- TODO Define functiones here
+
+traces
+-- TODO Define Combinatorial Test Traces here
+
+end Election1
