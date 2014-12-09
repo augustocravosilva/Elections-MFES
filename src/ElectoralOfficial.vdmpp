@@ -7,10 +7,24 @@ values
 -- TODO Define values here
 
 instance variables
+	private machine: VotingMachine;
 	
 operations
--- TODO Define operations here
 
+	public ElectoralOfficial: () ==> ElectoralOfficial
+		ElectoralOfficial() == 
+			return self;
+	
+	
+	--vamos modelar o cartão de acesso? se sim para iniciar a máquina precisa do cartão de acesso
+	--public initializeMachines: Election`Card ==> ()
+		--initializeMachines(mach) ==
+		--	machine := mach;
+			
+	--validar pessoa e mudar o estado da máquina para pré voto
+	
+	--
+	
 functions
 -- TODO Define functiones here
 

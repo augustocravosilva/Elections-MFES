@@ -1,4 +1,4 @@
-class Card
+class MemoryCard
 
 types
 	public Candidate = seq1 of char;
@@ -18,4 +18,4 @@ functions
 traces
 -- TODO Define Combinatorial Test Traces here
 
-end Card
+end MemoryCard

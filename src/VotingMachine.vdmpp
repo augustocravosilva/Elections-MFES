@@ -2,17 +2,30 @@ class VotingMachine
 
 types
 	public Status = <Off> | <Ready> | <OnVoting> | <End>;
-	public MachineCard = Card;
+	public MachineCard = MemoryCard;
 
 values
 -- TODO Define values here
 
 instance variables
 	public status : Status := <Off>; 
-	public mcard : Card;
+	public mcard : MemoryCard;
+	public choice : MemoryCard`Candidate;
 
 operations
--- TODO Define operations here
+ -- initialize status = ready
+ 
+ -- readyToVote status = OnVoting
+ 
+ -- escolher candidato
+ 
+ -- confirmar escolha -- depois muda estado da maquina
+ 
+ -- mudar escolha
+ 
+ -- cancelar escolha - não voto afinal
+ 
+ -- finalizar processo - termina a cena toda -> os dados estão no cartão de memória
 
 functions
 -- TODO Define functiones here

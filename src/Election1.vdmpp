@@ -3,6 +3,7 @@ class Election1
 types
 	public Person = token;
 	public official = ElectoralOfficial;
+	public Card = token;
 	
 values
 -- TODO Define values here
@@ -12,8 +13,28 @@ instance variables
 	private officials: set of official := {};
 
 operations
--- TODO Define operations here
-
+	-- Election class constructor
+	-- returns created object 
+	public Election1: () ==> Election1
+		Election1() == 
+			return self;
+			
+	-- Possible voters initialization
+	public setRegister: map Person to bool ==> ()
+		setRegister(reg) ==
+			 electoralRegister := reg;
+	
+	-- Electoral officials initialization
+	public setOfficials: set of official ==> ()
+		setOfficials(off) ==
+			 officials := off;
+	
+	--public startElection: () ==> ()
+		--startElection() ==
+			
+	--public finishElection: () ==> ()
+		--finishElection() ==
+		
 functions
 -- TODO Define functiones here
 
