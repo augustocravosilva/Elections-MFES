@@ -2,15 +2,17 @@ class Election1
 
 types
 	public Person = token;
-	public official = ElectoralOfficial;
 	public Card = token;
+	
 	
 values
 -- TODO Define values here
 
+
 instance variables
 	private electoralRegister: map Person to bool := {|->};
-	private officials: set of official := {};
+	--private officials: set of ElectoralOfficial := {};
+	private officials: ElectoralOfficial;
 
 operations
 	-- Election class constructor
@@ -20,12 +22,16 @@ operations
 			return self;
 			
 	-- Possible voters initialization
+	-- R1: every Person in argument "reg" must not had voted
+	-- R2: every Person in "electoralRegister" must not had voted
 	public setRegister: map Person to bool ==> ()
 		setRegister(reg) ==
-			 electoralRegister := reg;
+			 electoralRegister := reg
+	pre forall voted in set rng reg & voted = false
+	post forall voted in set rng electoralRegister & voted = false;
 	
 	-- Electoral officials initialization
-	public setOfficials: set of official ==> ()
+	public setOfficials: ElectoralOfficial ==> ()
 		setOfficials(off) ==
 			 officials := off;
 	
@@ -35,10 +41,13 @@ operations
 	--public finishElection: () ==> ()
 		--finishElection() ==
 		
+		
 functions
 -- TODO Define functiones here
 
+
 traces
 -- TODO Define Combinatorial Test Traces here
+
 
 end Election1

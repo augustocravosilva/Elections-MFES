@@ -2,7 +2,6 @@ class VotingMachine
 
 types
 	public Status = <Off> | <Ready> | <OnVoting> | <End>;
-	public MachineCard = MemoryCard;
 
 values
 -- TODO Define values here
@@ -10,16 +9,44 @@ values
 instance variables
 	public status : Status := <Off>; 
 	public mcard : MemoryCard;
-	public choice : MemoryCard`Candidate;
+	public choice : MemoryCard`Candidate := "";
 
 operations
- -- initialize status = ready
+ 	-- Election class constructor
+	-- returns created object 
+ 	public VotingMachine: () ==> VotingMachine
+ 		VotingMachine() ==
+ 			return self;
+ 	
+ 	-- Initialize memory card
+ 	-- R1: before operation, status must be <Off> 
+ 	public setMemoryCard: MemoryCard ==> ()
+ 		setMemoryCard(mcard1) == (
+ 			mcard := mcard1;
+ 			status := <Ready>
+ 	)
+ 	pre status = <Off>;
+ 	
+ 	-- Machine ready to receive vote
+	public permitVote: () ==> ()
+		permitVote() ==
+			status := <OnVoting>;
+	
+	-- Select candidate
+	-- R1: machine is on <OnVoting> status
+	-- R2: argument "cand" is a valid candidate (is on memory card)
+	public chooseCandidate: MemoryCard`Candidate ==> ()
+		chooseCandidate(cand) ==
+			choice := cand
+	pre status = <OnVoting> and
+		cand in set dom mcard.votes; 
  
- -- readyToVote status = OnVoting
- 
- -- escolher candidato
- 
- -- confirmar escolha -- depois muda estado da maquina
+	public confirmChoice: () ==> ()
+		confirmChoice() == (
+			if choice <> ""  then	mcard.addVote(choice);
+			status := <Ready>
+			)
+ 	pre status = <OnVoting>;
  
  -- mudar escolha
  

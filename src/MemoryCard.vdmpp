@@ -1,21 +1,35 @@
 class MemoryCard
 
 types
-	public Candidate = seq1 of char;
-
-values
--- TODO Define values here
-
+	public Candidate = seq of char;
+	
+		
 instance variables
-	private votes: map Candidate to nat := { |-> };
+	public votes: map Candidate to nat := { |-> };
+	-- incluir estado?
 	
 operations
--- TODO Define operations here
 
-functions
--- TODO Define functiones here
-
-traces
--- TODO Define Combinatorial Test Traces here
-
+	public MemoryCard: () ==> MemoryCard
+		MemoryCard() ==
+			return self;
+	
+	-- Candidates initialization
+	-- R1: all candidates in argument "candidates" must have 0 votes
+	public setCandidates: map Candidate to nat ==> ()
+		setCandidates(candidates) ==
+			votes := candidates
+	pre card dom votes = 0 and
+		forall vote in set rng votes & vote = 0;
+	
+	-- Add vote do candidate indicated in argument "candidate"
+	-- R1: "candidate" must be present in votes
+	-- R2: at the end, "candidate" must have one more vote
+	public addVote: Candidate ==> ()
+		addVote(candidate) ==
+			votes := votes ++ {candidate |-> votes(candidate)+1}
+	pre candidate in set dom votes
+	-- not suported
+	--	post votes(candidate) = votes(candidate)~ + 1;
+			
 end MemoryCard

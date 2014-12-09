@@ -1,13 +1,15 @@
 class ElectoralOfficial
 
 types
-	
+-- TODO Define types here	
 	
 values
 -- TODO Define values here
 
+
 instance variables
 	private machine: VotingMachine;
+	
 	
 operations
 
@@ -28,7 +30,9 @@ operations
 functions
 -- TODO Define functiones here
 
+
 traces
 -- TODO Define Combinatorial Test Traces here
+
 
 end ElectoralOfficial
