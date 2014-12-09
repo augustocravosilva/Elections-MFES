@@ -49,7 +49,7 @@ operations
  	pre status = <OnVoting>;
  
  -- mudar escolha
- 
+
  -- cancelar escolha - não voto afinal
  
  -- finalizar processo - termina a cena toda -> os dados estão no cartão de memória
