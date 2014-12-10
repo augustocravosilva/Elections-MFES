@@ -5,8 +5,8 @@ types
 	
 		
 instance variables
-	public votes: map Candidate to nat := { |-> };
-	-- incluir estado?
+	public static votes: map Candidate to nat := { |-> };
+	
 	
 operations
 

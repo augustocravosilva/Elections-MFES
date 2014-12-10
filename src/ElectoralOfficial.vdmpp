@@ -33,16 +33,17 @@ operations
 	pre person in set dom register and
 		register(person) = false;
 	
-			
-	--vamos modelar o cartão de acesso? se sim para iniciar a máquina precisa do cartão de acesso
-	--public initializeMachines: Election`Card ==> ()
-		--initializeMachines(mach) ==
-		--	machine := mach;
-			
-	--validar pessoa e mudar o estado da máquina para pré voto, quando inserir no cartao que votou?
 	
-	--
+	-- Initialize voting machines		
+	public initializeMachines: VotingMachine ==> ()
+		initializeMachines(mach) ==
+			machine := mach;
 	
+	-- Validation card for the voting machine
+	public setCard: Card ==> ()
+		setCard(car) ==
+			validationCard := car;
+
 functions
 -- TODO Define functiones here
 

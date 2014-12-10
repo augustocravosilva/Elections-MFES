@@ -33,12 +33,11 @@ operations
 	public setOfficials: ElectoralOfficial ==> ()
 		setOfficials(off) ==
 			 officials := off;
-	
-	--public startElection: () ==> ()
-		--startElection() ==
 			
-	--public finishElection: () ==> ()
-		--finishElection() ==
+	-- TODO: pensar noutra forma de fazer isto, sem usar o static (porque os cartoes de memoria nao sabem o estado uns dos outros)
+	public finishElection: () ==> map MemoryCard`Candidate to nat1
+		finishElection() ==
+			return MemoryCard`votes;
 		
 		
 functions

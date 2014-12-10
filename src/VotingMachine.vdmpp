@@ -10,6 +10,7 @@ instance variables
 	public status : Status := <Off>; 
 	public mcard : MemoryCard;
 	public choice : MemoryCard`Candidate := "";
+	public vcard : ElectoralOfficial`Card;
 
 operations
  	-- Election class constructor
@@ -18,22 +19,24 @@ operations
  		VotingMachine() ==
  			return self;
  	
- 	-- Initialize memory card
+ 	-- Initialize memory and validation cards
  	-- R1: before operation, status must be <Off> 
- 	public setMemoryCard: MemoryCard ==> ()
- 		setMemoryCard(mcard1) == (
+ 	public setCards: MemoryCard * ElectoralOfficial`Card ==> ()
+ 		setCards(mcard1, vcard1) == (
  			mcard := mcard1;
+ 			vcard := vcard1;
  			status := <Ready>
  	)
  	pre status = <Off>;
  	
  	-- Machine ready to receive vote
  	-- R1: before operation, status must be <Ready> 
- 	-- TODO: change to validateCard: recebe-se um cartao que a pessoa recebeu e ve-se se é valido ou nao
-	public validateCard: () ==> ()
-		validateCard() ==
+ 	--------- TODO: recebe-se um cartao que a pessoa recebeu e ve-se se é valido ou nao
+	public validateCard: ElectoralOfficial`Card ==> ()
+		validateCard(vcard1) ==
 			status := <OnVoting>
-	pre status = <Ready>;
+	pre status = <Ready> and
+		vcard1 = vcard;
 	
 	-- Select candidate
 	-- R1: machine is on <OnVoting> status
@@ -52,15 +55,6 @@ operations
 			status := <Ready>
 			)
  	pre status = <OnVoting>;
- 
- 	-- Change candidate choice
-	-- R1: machine is on <OnVoting> status
-	-- R2: argument "cand" is a valid candidate (is on memory card)
- public changeChoice: MemoryCard`Candidate ==> ()
-		changeChoice(cand) ==
-			choice := cand
- 	pre status = <OnVoting> and
-		cand in set dom mcard.votes; 
 
 	-- Change to "white" vote
 	-- R1: machine is on <OnVoting> status
@@ -86,7 +80,7 @@ operations
 			status := <End>
 	pre status = <Ready>;
  
-
+ 
 functions
 -- TODO Define functiones here
 
