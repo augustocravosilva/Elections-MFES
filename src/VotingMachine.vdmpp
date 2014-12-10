@@ -28,9 +28,12 @@ operations
  	pre status = <Off>;
  	
  	-- Machine ready to receive vote
-	public permitVote: () ==> ()
-		permitVote() ==
-			status := <OnVoting>;
+ 	-- R1: before operation, status must be <Ready> 
+ 	-- TODO: change to validateCard: recebe-se um cartao que a pessoa recebeu e ve-se se � valido ou nao
+	public validateCard: () ==> ()
+		validateCard() ==
+			status := <OnVoting>
+	pre status = <Ready>;
 	
 	-- Select candidate
 	-- R1: machine is on <OnVoting> status
@@ -41,6 +44,8 @@ operations
 	pre status = <OnVoting> and
 		cand in set dom mcard.votes; 
  
+ 	-- "Submit" vote
+	-- R1: machine is on <OnVoting> status
 	public confirmChoice: () ==> ()
 		confirmChoice() == (
 			if choice <> ""  then	mcard.addVote(choice);
@@ -48,16 +53,46 @@ operations
 			)
  	pre status = <OnVoting>;
  
- -- mudar escolha
+ 	-- Change candidate choice
+	-- R1: machine is on <OnVoting> status
+	-- R2: argument "cand" is a valid candidate (is on memory card)
+ public changeChoice: MemoryCard`Candidate ==> ()
+		changeChoice(cand) ==
+			choice := cand
+ 	pre status = <OnVoting> and
+		cand in set dom mcard.votes; 
 
- -- cancelar escolha - não voto afinal
+	-- Change to "white" vote
+	-- R1: machine is on <OnVoting> status
+	public cleanSelection: () ==> ()
+		cleanSelection() ==
+			choice := ""
+ 	pre status = <OnVoting>;
+ 	
+ 	-- Give up on voting
+	-- R1: machine is on <OnVoting> status
+ 	public cancelVote: () ==> ()
+ 		cancelVote() == (
+ 			choice := "";
+ 			status := <Ready>
+ 			)
+ 	pre status = <OnVoting>;
+ 	
+ 	-- End election
+ 	-- TODO: finalizar processo - termina a cena toda -> os dados estao no cartao de memoria
+ 	-- R1: machine is on <Ready> status
+	public endVoting: () ==> ()
+		endVoting() ==
+			status := <End>
+	pre status = <Ready>;
  
- -- finalizar processo - termina a cena toda -> os dados estão no cartão de memória
 
 functions
 -- TODO Define functiones here
 
+
 traces
 -- TODO Define Combinatorial Test Traces here
+
 
 end VotingMachine

@@ -2,7 +2,6 @@ class Election1
 
 types
 	public Person = token;
-	public Card = token;
 	
 	
 values
@@ -10,7 +9,7 @@ values
 
 
 instance variables
-	private electoralRegister: map Person to bool := {|->};
+	public static electoralRegister: map Person to bool := {|->};
 	--private officials: set of ElectoralOfficial := {};
 	private officials: ElectoralOfficial;
 

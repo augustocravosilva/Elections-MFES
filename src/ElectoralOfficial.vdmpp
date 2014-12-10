@@ -1,14 +1,17 @@
 class ElectoralOfficial
 
 types
--- TODO Define types here	
+	public Card = token;
 	
 values
 -- TODO Define values here
 
 
 instance variables
+	--private machines: set of VotingMachine;
 	private machine: VotingMachine;
+	private register: map Election1`Person to bool := Election1`electoralRegister;
+	public validationCard: Card;
 	
 	
 operations
@@ -17,13 +20,26 @@ operations
 		ElectoralOfficial() == 
 			return self;
 	
+	public 
 	
+	-- Validate person
+	-- R1: "person" must be in electoral register
+	-- R2: "person" must not had voted already
+	public validatePerson: Election1`Person ==> Card
+		validatePerson(person) == (
+			register := register ++ { person |-> true };
+			return validationCard;
+			)
+	pre person in set dom register and
+		register(person) = false;
+	
+			
 	--vamos modelar o cartão de acesso? se sim para iniciar a máquina precisa do cartão de acesso
 	--public initializeMachines: Election`Card ==> ()
 		--initializeMachines(mach) ==
 		--	machine := mach;
 			
-	--validar pessoa e mudar o estado da máquina para pré voto
+	--validar pessoa e mudar o estado da máquina para pré voto, quando inserir no cartao que votou?
 	
 	--
 	
