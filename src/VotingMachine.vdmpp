@@ -2,16 +2,17 @@ class VotingMachine
 
 types
 	public Status = <Off> | <Ready> | <OnVoting> | <End>;
-
-values
--- TODO Define values here
+	
 
 instance variables
 	public status : Status := <Off>; 
-	public mcard : MemoryCard;
-	public choice : MemoryCard`Candidate := "";
-	public vcard : ElectoralOfficial`Card;
+	public vcard : ElectoralOfficial`Card := mk_token(1);
+	public choice : Election`Candidate := ".";
+	public votes: map Election`Candidate to nat := { "blank" |-> 0};
 
+	------- TODO: o cartao de memoria nao muda
+	
+	
 operations
  	-- Election class constructor
 	-- returns created object 
@@ -21,72 +22,89 @@ operations
  	
  	-- Initialize memory and validation cards
  	-- R1: before operation, status must be <Off> 
- 	public setCards: MemoryCard * ElectoralOfficial`Card ==> ()
- 		setCards(mcard1, vcard1) == (
- 			mcard := mcard1;
+ 	public setCards: ElectoralOfficial`Card ==> ()
+ 		setCards(vcard1) == (
  			vcard := vcard1;
  			status := <Ready>
  	)
  	pre status = <Off>;
  	
+ 	-- Candidates initialization
+	-- R1: all candidates in argument "candidates" must have 0 votes
+	public setCandidates: map Election`Candidate to nat ==> ()
+		setCandidates(candidates) ==
+			votes := votes ++ candidates
+	pre card dom votes = 0 and
+		forall vote in set rng votes & vote = 0;
+ 	
  	-- Machine ready to receive vote
  	-- R1: before operation, status must be <Ready> 
- 	--------- TODO: recebe-se um cartao que a pessoa recebeu e ve-se se é valido ou nao
+ 	--------- TODO: recebe-se um cartao que a pessoa recebeu e ve-se se ï¿½ valido ou nao
 	public validateCard: ElectoralOfficial`Card ==> ()
-		validateCard(vcard1) ==
-			status := <OnVoting>
+		validateCard(vcard1) == atomic (
+			status := <OnVoting>;
+			choice := "blank"
+			)
 	pre status = <Ready> and
 		vcard1 = vcard;
+		
 	
 	-- Select candidate
 	-- R1: machine is on <OnVoting> status
 	-- R2: argument "cand" is a valid candidate (is on memory card)
-	public chooseCandidate: MemoryCard`Candidate ==> ()
+	public chooseCandidate: Election`Candidate ==> ()
 		chooseCandidate(cand) ==
 			choice := cand
 	pre status = <OnVoting> and
-		cand in set dom mcard.votes; 
+		cand in set dom votes; 
  
  	-- "Submit" vote
+ 	---------- TODO: candidato vazio again
 	-- R1: machine is on <OnVoting> status
 	public confirmChoice: () ==> ()
 		confirmChoice() == (
-			if choice <> ""  then	mcard.addVote(choice);
-			status := <Ready>
+			status := <Ready>;
+			addVote(choice)
 			)
- 	pre status = <OnVoting>;
+ 	pre status = <OnVoting> and
+ 		choice <> "";
 
+
+	-- Add vote do candidate indicated in argument "candidate"
+	-- R1: "candidate" must be present in votes
+	-- R2: at the end, "candidate" must have one more vote
+	------ TODO: isto nao deve estar bem
+	private addVote: Election`Candidate ==> ()
+		addVote(candidate) ==
+			votes := votes ++ {candidate |-> votes(candidate)+1}
+	pre candidate in set dom votes;
+	-- not suported
+	--	post votes(candidate) = votes(candidate)~ + 1;
+	
 	-- Change to "white" vote
 	-- R1: machine is on <OnVoting> status
 	public cleanSelection: () ==> ()
 		cleanSelection() ==
-			choice := ""
+			choice := "blank"
  	pre status = <OnVoting>;
  	
  	-- Give up on voting
 	-- R1: machine is on <OnVoting> status
  	public cancelVote: () ==> ()
  		cancelVote() == (
- 			choice := "";
+ 			choice := ".";
  			status := <Ready>
  			)
  	pre status = <OnVoting>;
  	
  	-- End election
- 	-- TODO: finalizar processo - termina a cena toda -> os dados estao no cartao de memoria
+ 	---------- TODO: finalizar processo - termina a cena toda
+ 	---------- TODO: -> os dados estao no cartao de memoria <- precisa do cartao de acesso
  	-- R1: machine is on <Ready> status
 	public endVoting: () ==> ()
 		endVoting() ==
 			status := <End>
 	pre status = <Ready>;
- 
- 
-functions
--- TODO Define functiones here
-
-
-traces
--- TODO Define Combinatorial Test Traces here
 
 
 end VotingMachine

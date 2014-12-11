@@ -3,55 +3,37 @@ class Election
 types
 	public Person = token;
 	public Candidate = seq1 of char;
+	public Register = map Person to bool;
+
 
 instance variables
-	private register: set of Person := {};
-	private voters: set of Person := {};
-	private votes: map Candidate to nat := { |-> };
+	private electoralRegisters: set of Register := {};
+	private officials: set of ElectoralOfficial := {};
 	
+
 operations
-	
 	-- Election class constructor
 	-- returns created object 
 	public Election: () ==> Election
 		Election() == 
 			return self;
-
-	-- Candidates initialization
-	-- R1: all candidates in argument cand must have 0 votes
-	-- R2: all candidates in votes must have 0 votes
-	public setCandidates: map Candidate to nat ==> ()
-		setCandidates(cand) ==
-			votes := cand
-	pre forall c in set rng cand & c = 0
-	post forall vote in set rng votes & vote = 0;
 			
 	-- Possible voters initialization
-	public setRegister: set of Person ==> ()
+	-- R1: every Person in argument "reg" must not had voted
+	-- R2: every Person in "electoralRegister" must not had voted
+	public setRegister: set of Register ==> ()
 		setRegister(reg) ==
-			register := reg;
+			 electoralRegisters := reg;
+	------- TODO: pre forall voted in set rng reg & voted = false
+	------- TODO: post forall voted in set rng electoralRegister & voted = false;
+	
+	-- Electoral officials initialization
+	public setOfficials: set of ElectoralOfficial ==> ()
+		setOfficials(off) ==
+			 officials := off;
 			
-	-- Vote scenario
-	-- R1: person voting hasn't voted yet and is registered
-	-- R2: after voting, the person in voters
-	public vote: Person * Candidate ==> ()
-		vote(person, candidate) == (
-			votes := votes ++ {candidate |-> votes(candidate) + 1 } ;
-			voters := voters union {person} )
-	pre person in set register and
-		person not in set voters
-	post person in set voters;
-	
-	-- TODO: Ver se a pessoa é valida e autorizar votação
-	-- public validateVoter: () ==> ()
-		--validateVoter() == ();
-		
-	-- TODO: registar o voto da pessoa sem associar na mesma função voto + pessoa
-	-- public doVote: () ==> ()
-		-- doVote() == ();
-	
-	-- TODO: opção de cancelar/mudar voto
-	
-	-- TODO: fecho das votações e eleição de candidato
-	
+	-------- TODO: pensar noutra forma de fazer isto, sem usar o static (porque os cartoes de memoria nao sabem o estado uns dos outros)
+	--public finishElection: () ==> map Election1`Candidate to nat1
+		--finishElection() ==
+
 end Election

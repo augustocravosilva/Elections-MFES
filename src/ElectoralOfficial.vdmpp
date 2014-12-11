@@ -3,15 +3,11 @@ class ElectoralOfficial
 types
 	public Card = token;
 	
-values
--- TODO Define values here
-
 
 instance variables
-	--private machines: set of VotingMachine;
 	private machine: VotingMachine;
-	private register: map Election1`Person to bool := Election1`electoralRegister;
-	public validationCard: Card;
+	private register: Election`Register;  ----- TODO: funçao de inicializaçao e blabla
+	public validationCard: Card := mk_token(1);
 	
 	
 operations
@@ -25,7 +21,7 @@ operations
 	-- Validate person
 	-- R1: "person" must be in electoral register
 	-- R2: "person" must not had voted already
-	public validatePerson: Election1`Person ==> Card
+	public validatePerson: Election`Person ==> Card
 		validatePerson(person) == (
 			register := register ++ { person |-> true };
 			return validationCard;
@@ -43,13 +39,6 @@ operations
 	public setCard: Card ==> ()
 		setCard(car) ==
 			validationCard := car;
-
-functions
--- TODO Define functiones here
-
-
-traces
--- TODO Define Combinatorial Test Traces here
 
 
 end ElectoralOfficial

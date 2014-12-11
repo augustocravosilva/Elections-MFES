@@ -3,6 +3,7 @@ class TestElection is subclass of MyTestCase
 operations
 
  -- Entry point that runs all tests with valid inputs
+  /*
   public testAll: () ==> ()
   	testAll() == (
   		testVoteScn();
@@ -26,6 +27,7 @@ operations
 		election.vote(a, "a");
 		election.vote(b, "b");
 		
-		);
+		)
+		*/
 			
 end TestElection
