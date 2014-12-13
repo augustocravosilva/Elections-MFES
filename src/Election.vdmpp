@@ -7,8 +7,9 @@ types
 
 
 instance variables
-	private electoralRegisters: set of Register := {};
-	private officials: set of ElectoralOfficial := {};
+	--registers for each electoralOfficial
+	private electoralRegisters: seq of Register := [];
+	private officials: seq of ElectoralOfficial := [];
 	
 
 operations
@@ -18,22 +19,36 @@ operations
 		Election() == 
 			return self;
 			
-	-- Possible voters initialization
-	-- R1: every Person in argument "reg" must not had voted
-	-- R2: every Person in "electoralRegister" must not had voted
-	public setRegister: set of Register ==> ()
-		setRegister(reg) ==
-			 electoralRegisters := reg;
-	------- TODO: pre forall voted in set rng reg & voted = false
-	------- TODO: post forall voted in set rng electoralRegister & voted = false;
-	
 	-- Electoral officials initialization
-	public setOfficials: set of ElectoralOfficial ==> ()
-		setOfficials(off) ==
+	public setOfficials: seq of ElectoralOfficial ==> ()
+		setOfficials(off) == (
 			 officials := off;
+			 for all index in set inds officials 
+			 		do officials(index).setRegister(electoralRegisters(index));	
+			 )
+	-- already has the electoralRegister defined
+	pre len electoralRegisters > 0 and
+		len electoralRegisters = len off;
+	--post forall i in set inds officials & officials(i).getRegister() =  electoralRegisters(i);
+			 
+			 
+			
+		--pre o número de oficials igual ao numero de electoralRegisters
+			
+			
+			
 			
 	-------- TODO: pensar noutra forma de fazer isto, sem usar o static (porque os cartoes de memoria nao sabem o estado uns dos outros)
 	--public finishElection: () ==> map Election1`Candidate to nat1
 		--finishElection() ==
 
+				-- Possible voters initialization
+	-- R1: every Person in argument "reg" must not had voted
+	-- R2: every Person in "electoralRegister" must not had voted
+	public setRegister: seq of Election`Register ==> ()
+		setRegister(reg) ==
+			 electoralRegisters := reg
+	--pre len [q | q in set (elems reg) & reg(q) = false] = len reg    
+	pre forall voted in set rng elems reg & voted = false
+	------- TODO: post forall voted in set rng electoralRegister & voted = false;
 end Election

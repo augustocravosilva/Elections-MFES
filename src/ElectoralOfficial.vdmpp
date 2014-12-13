@@ -39,6 +39,14 @@ operations
 	public setCard: Card ==> ()
 		setCard(car) ==
 			validationCard := car;
+			
+	public setRegister: Election`Register ==> ()
+		setRegister(reg) ==
+			 register := reg;
+			 
+	public getRegister: () ==> Election`Register
+		getRegister() ==
+			 return register;
 
 
 end ElectoralOfficial
