@@ -5,9 +5,9 @@ types
 	
 
 instance variables
-	private machine: VotingMachine;
+	public machine: VotingMachine;
 	private register: Election`Register;  ----- TODO: funçao de inicializaçao e blabla
-	public validationCard: Card := mk_token(1);
+	public validationCard: Card;
 	
 	
 operations
@@ -37,8 +37,12 @@ operations
 	
 	-- Validation card for the voting machine
 	public setCard: Card ==> ()
-		setCard(car) ==
+		setCard(car) == (
 			validationCard := car;
+			machine.setCards(car);
+		);
+	--	post machine.isValidCard(car);
+			
 			
 	public setRegister: Election`Register ==> ()
 		setRegister(reg) ==
@@ -47,6 +51,13 @@ operations
 	public getRegister: () ==> Election`Register
 		getRegister() ==
 			 return register;
+			 
+	public getMachine: () ==> VotingMachine
+		getMachine() ==
+			 return machine;
+			 
+ 
+functions
 
 
 end ElectoralOfficial

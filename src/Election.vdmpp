@@ -20,11 +20,13 @@ operations
 			return self;
 			
 	-- Electoral officials initialization
+	-- the officials should already have their machines
 	public setOfficials: seq of ElectoralOfficial ==> ()
 		setOfficials(off) == (
 			 officials := off;
 			 for all index in set inds officials 
 			 		do officials(index).setRegister(electoralRegisters(index));	
+			 initCodes();
 			 )
 	-- already has the electoralRegister defined
 	pre len electoralRegisters > 0 and
@@ -42,13 +44,24 @@ operations
 	--public finishElection: () ==> map Election1`Candidate to nat1
 		--finishElection() ==
 
-				-- Possible voters initialization
+	
 	-- R1: every Person in argument "reg" must not had voted
 	-- R2: every Person in "electoralRegister" must not had voted
 	public setRegister: seq of Election`Register ==> ()
 		setRegister(reg) ==
-			 electoralRegisters := reg
-	--pre len [q | q in set (elems reg) & reg(q) = false] = len reg    
-	pre forall voted in set rng elems reg & voted = false
-	------- TODO: post forall voted in set rng electoralRegister & voted = false;
+			 electoralRegisters := reg   
+	pre forall voted in set elems reg & forall person in set rng voted & person = false
+	post forall voted in set elems electoralRegisters & forall person in set rng voted & person = false;
+	
+	-- after initiating electoral officials and machines
+	private initCodes: () ==> ()
+		initCodes() == (
+		for all official in set elems officials 
+			 		do (dcl x: token := mk_token(1); 
+			 			official.setCard(x);
+			 ) 
+		);
+		
+		--post forall x in set elems officials & x.getMachine();
+			
 end Election

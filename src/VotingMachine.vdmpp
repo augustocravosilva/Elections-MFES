@@ -7,11 +7,14 @@ types
 instance variables
 	public status : Status := <Off>; 
 	public vcard : ElectoralOfficial`Card := mk_token(1);
-	public choice : Election`Candidate := ".";
+	public vcardSet : bool := false;
+	public choice : Election`Candidate := "blank";
 	public votes: map Election`Candidate to nat := { "blank" |-> 0};
 
 	------- TODO: o cartao de memoria nao muda
-	
+	-- when machine is working it has a vcard set
+	inv status = <Ready> or status = <OnVoting> => vcardSet;
+	inv {choice} subset dom votes;
 	
 operations
  	-- Election class constructor
@@ -21,20 +24,31 @@ operations
  			return self;
  	
  	-- Initialize memory and validation cards
- 	-- R1: before operation, status must be <Off> 
+ 	-- R1: before operation, status must be <Off>
+ 	-- card must not been entered yet
  	public setCards: ElectoralOfficial`Card ==> ()
  		setCards(vcard1) == (
  			vcard := vcard1;
+ 			vcardSet := true;
  			status := <Ready>
  	)
  	pre status = <Off>;
+ 	
  	
  	-- Candidates initialization
 	-- R1: all candidates in argument "candidates" must have 0 votes
 	public setCandidates: map Election`Candidate to nat ==> ()
 		setCandidates(candidates) ==
 			votes := votes ++ candidates
-	pre card dom votes = 0 and
+		-- votes has already blank option
+	pre card dom votes = 1 and
+		-- all candidates have 0 votes
+		forall vote in set rng votes & vote = 0 and
+		-- machine is still off
+		status = <Off>
+		-- votes has so many candidates as candidates plus the blank candidate
+	post card dom votes = card dom candidates + 1 and
+		-- all candidates have 0 votes
 		forall vote in set rng votes & vote = 0;
  	
  	-- Machine ready to receive vote
@@ -46,7 +60,8 @@ operations
 			choice := "blank"
 			)
 	pre status = <Ready> and
-		vcard1 = vcard;
+		vcard1 = vcard
+	post status = <OnVoting>;
 		
 	
 	-- Select candidate
@@ -102,9 +117,17 @@ operations
  	---------- TODO: -> os dados estao no cartao de memoria <- precisa do cartao de acesso
  	-- R1: machine is on <Ready> status
 	public endVoting: () ==> ()
-		endVoting() ==
-			status := <End>
+		endVoting() == (
+			status := <End>;
+			vcardSet := false;
+		)
 	pre status = <Ready>;
 
+	public isValidCard: ElectoralOfficial`Card ==> bool
+		isValidCard(c) == (
+			return c = vcard;
+		)
+	pre vcardSet
+	post vcard = vcard~;
 
 end VotingMachine
