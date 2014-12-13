@@ -2,14 +2,14 @@ class VotingMachine
 
 types
 	public Status = <Off> | <Ready> | <OnVoting> | <End>;
-	
+	public MemCard = map Election`Candidate to nat;
 
 instance variables
 	public status : Status := <Off>; 
 	public vcard : ElectoralOfficial`Card := mk_token(1);
 	public vcardSet : bool := false;
 	public choice : Election`Candidate := "blank";
-	public votes: map Election`Candidate to nat := { "blank" |-> 0};
+	public votes: MemCard := { "blank" |-> 0};
 
 	------- TODO: o cartao de memoria nao muda
 	-- when machine is working it has a vcard set
@@ -82,7 +82,8 @@ operations
 			addVote(choice)
 			)
  	pre status = <OnVoting> and
- 		choice <> "";
+ 		choice in set dom votes
+ 	post choice = "blank";
 
 
 	-- Add vote do candidate indicated in argument "candidate"
@@ -90,11 +91,15 @@ operations
 	-- R2: at the end, "candidate" must have one more vote
 	------ TODO: isto nao deve estar bem
 	private addVote: Election`Candidate ==> ()
-		addVote(candidate) ==
-			votes := votes ++ {candidate |-> votes(candidate)+1}
-	pre candidate in set dom votes;
+		addVote(candidate) == (
+			votes := votes ++ {candidate |-> votes(candidate)+1};
+			choice := "blank";
+		)
+	pre candidate in set dom votes
+	post dom votes = dom votes~;
 	-- not suported
-	--	post votes(candidate) = votes(candidate)~ + 1;
+	-- post votes(candidate) = votes(candidate)~ + 1;
+	
 	
 	-- Change to "white" vote
 	-- R1: machine is on <OnVoting> status
@@ -107,7 +112,7 @@ operations
 	-- R1: machine is on <OnVoting> status
  	public cancelVote: () ==> ()
  		cancelVote() == (
- 			choice := ".";
+ 			choice := "blank";
  			status := <Ready>
  			)
  	pre status = <OnVoting>;

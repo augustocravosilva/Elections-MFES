@@ -27,7 +27,8 @@ operations
 			return validationCard;
 			)
 	pre person in set dom register and
-		register(person) = false;
+		register(person) = false
+	post register(person) = true;
 	
 	
 	-- Initialize voting machines		
