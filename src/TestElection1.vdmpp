@@ -2,12 +2,6 @@ class TestElection1 is subclass of MyTestCase
 
 operations
 
-	-- Entry point that runs all tests with valid inputs
-  public testAll: () ==> ()
-  	testAll() == (
-  		testVoteAndSave();
-  );
-  
  	/***** USE CASE SCENARIOS ******/
 	
 	-- Normal scenario for configuring the election,
@@ -95,12 +89,34 @@ operations
 	-- not suported
 		-- official.machine.votes = official.machine.votes~ + { "blank" |-> official.machine.votes("blank")+1}
 	
+	
+	/***** TEST CASES WITH VALID INPUTS ******/
+	
+	-- Entry point that runs all tests with valid inputs
+  public testAll: () ==> ()
+  	testAll() == (
+  		testConf();
+  		testVoteAndSave();
+  );
+	
+	public testConf: () ==> () 
+		testConf() == (
+			dcl off : ElectoralOfficial := new ElectoralOfficial();
+			dcl person1 : Election`Person := mk_token(1);
+			dcl elc : Election := configureElectionScn([{person1 |-> false}], [off]);
+			configureOfficialsScn(elc);
+			);
+			
 	public testVoteAndSave: () ==> () 
 		testVoteAndSave() == (
 			dcl off : ElectoralOfficial := new ElectoralOfficial();
 			dcl person1 : Election`Person := mk_token(1);
 			dcl elc : Election := configureElectionScn([{person1 |-> false}], [off]);
 			configureOfficialsScn(elc);
-			)
+			validateVoterScn(off, person1); -- usar a eleiçao ou a mesa??
+			voteScn(off, "blank");
+			);
+			
+		-- TODO: falta inicialização do cartao de memoria!!!!
 			
 end TestElection1
