@@ -20,8 +20,9 @@ operations
  	-- Election class constructor
 	-- returns created object 
  	public VotingMachine: () ==> VotingMachine
- 		VotingMachine() ==
+ 		VotingMachine() == (
  			return self;
+ 			);
  	
  	-- Initialize memory and validation cards
  	-- R1: before operation, status must be <Off>
@@ -31,7 +32,7 @@ operations
  			vcard := vcard1;
  			vcardSet := true;
  	)
- 	pre status = <Off>
+ 	pre status = <Off> and not vcardSet
  	post status = <Off> and vcardSet;
  	
  	-- Turn on the machine

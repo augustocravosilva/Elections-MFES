@@ -5,7 +5,7 @@ types
 	
 
 instance variables
-	public machine: VotingMachine;
+	public machine: VotingMachine := new VotingMachine();
 	public register: Election`Register := { |-> };
 	public vcard: Card := mk_token(1);
 	public vcardSet: bool := false;
@@ -17,7 +17,6 @@ operations
 	-- returns created object 
 	public ElectoralOfficial: () ==> ElectoralOfficial
 		ElectoralOfficial() == (
-			machine := new VotingMachine();
 			return self
 		); 
 	
@@ -33,24 +32,18 @@ operations
 		register(person) = false
 	post register(person) = true;
 	
-	-- Initialize voting machines		
-	public initializeMachines: VotingMachine ==> ()
-		initializeMachines(mach) ==
-			machine := mach;
-	---- TODO pre/post?	
-	
 	-- Validation card for the voting machine
 	public setCard: Card ==> ()
 		setCard(car) == (
 			vcard := car;
-			machine.setCards(car);
 			vcardSet := true;
+			machine.setCards(car);
 		)
 	pre vcardSet = false
 	post machine.vcard = car 
+		and machine.vcardSet
 		and vcard = car
-		and vcardSet
-		and machine.vcardSet;
+		and vcardSet;
 	
 	-- Initialize register	
 	public setRegister: Election`Register ==> ()

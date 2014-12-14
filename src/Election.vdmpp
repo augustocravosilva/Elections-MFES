@@ -51,11 +51,13 @@ operations
 	public initCodes: () ==> ()
 		initCodes() == (
 			for all official in set elems officials 
-			 		do (dcl x: token := mk_token(1); 
+			 		do (
+			 			dcl x: token := mk_token(1); 
 			 			official.setCard(x);
 			 ) 
 		)
-		post forall off in set elems officials & off.vcardSet=true; -- TODO pre/post
+		pre forall off in set elems officials & off.vcardSet=false
+		post forall off in set elems officials & off.vcardSet;
 		
 		
 		-- Turn on voting machines
