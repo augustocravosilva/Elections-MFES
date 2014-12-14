@@ -8,9 +8,11 @@ types
 
 instance variables
 	--registers for each electoralOfficial
-	private electoralRegisters: seq of Register := [];
-	private officials: seq of ElectoralOfficial := [];
+	public electoralRegisters: seq of Register := [];
+	public officials: seq of ElectoralOfficial := [];
 	
+	-- a person is only in one register
+	--inv forall x in set elems electoralRegisters & forall person in set dom x &  not hasRepetitions(person);
 
 operations
 	-- Election class constructor
@@ -54,14 +56,26 @@ operations
 	post forall voted in set elems electoralRegisters & forall person in set rng voted & person = false;
 	
 	-- after initiating electoral officials and machines
-	private initCodes: () ==> ()
+	public initCodes: () ==> ()
 		initCodes() == (
-		for all official in set elems officials 
+			for all official in set elems officials 
 			 		do (dcl x: token := mk_token(1); 
 			 			official.setCard(x);
 			 ) 
 		);
 		
 		--post forall x in set elems officials & x.getMachine();
+		
+		public turnOnMachines: () ==> ()
+		turnOnMachines() == (
+			for all official in set elems officials do  
+			 			official.machine.turnOn(official.vcard);
+		);
+
+functions
+		
+		 -- Checks if a sequence of elements of type @T has no duplicates
+	public hasRepetitions[@T](s: seq of @T) res: bool ==
+  	exists i, j in set inds s & i <> j and s(i) = s(j);
 			
 end Election

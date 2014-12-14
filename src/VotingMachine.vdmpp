@@ -30,9 +30,18 @@ operations
  		setCards(vcard1) == (
  			vcard := vcard1;
  			vcardSet := true;
+ 	)
+ 	pre status = <Off>
+ 	post status = <Off> and vcardSet;
+ 	
+ 	public turnOn: ElectoralOfficial`Card ==> ()
+ 		turnOn(vcard1) == (
  			status := <Ready>
  	)
- 	pre status = <Off>;
+ 	pre vcard1 = vcard
+ 		and status = <Off>
+ 	post status = <Ready>;
+ 	
  	
  	
  	-- Candidates initialization

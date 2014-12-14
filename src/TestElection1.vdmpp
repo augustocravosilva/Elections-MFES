@@ -7,6 +7,33 @@ operations
   	--testAll() == (
   		--testVoteScn();
   --);
+  
+ 	/***** USE CASE SCENARIOS ******/
+	
+	-- Normal scenario for configuring the election,
+	-- as described in section X of the report, covering requirement Y.
+	public configureElection: seq of Election`Register * seq of ElectoralOfficial ==> Election
+	configureElection(register, officials) == (
+			dcl election : Election := new Election();
+			election.setRegister(register);
+			election.setOfficials(officials);  
+			return election;
+	)
+	post RESULT.electoralRegisters = register 
+	     and RESULT.officials = officials; -- não tenho a certeza se vai dar porque o initCodes muda-lhe uma cena
+	    -- and forall off in set elems RESULT.officials & 
 
+	-- Normal scenario for configuring the ElectoralOfficials,
+	-- as described in section X of the report, covering requirement Y.
+	public configureOfficials: Election ==> ()
+	configureOfficials(election) == (
+			election.initCodes(); 
+			election.turnOnMachines();
+	)
+	pre forall off in set elems election.officials & off.machine.status = <Off> 
+					and not off.vcardSet and not off.machine.vcardSet
+	post forall off in set elems election.officials & off.vcardSet 	
+	   			and off.machine.vcardSet and off.vcard = off.machine.vcard
+	     		and off.machine.status = <Ready>;
 
 end TestElection1

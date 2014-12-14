@@ -7,14 +7,17 @@ types
 instance variables
 	public machine: VotingMachine;
 	private register: Election`Register;  ----- TODO: funçao de inicializaçao e blabla
-	public validationCard: Card;
+	public vcard: Card;
+	public vcardSet: bool := false;
 	
 	
 operations
 
 	public ElectoralOfficial: () ==> ElectoralOfficial
-		ElectoralOfficial() == 
-			return self;
+		ElectoralOfficial() == (
+			machine := new VotingMachine();
+			return self
+		);
 	
 	public 
 	
@@ -24,7 +27,7 @@ operations
 	public validatePerson: Election`Person ==> Card
 		validatePerson(person) == (
 			register := register ++ { person |-> true };
-			return validationCard;
+			return vcard;
 			)
 	pre person in set dom register and
 		register(person) = false
@@ -39,10 +42,15 @@ operations
 	-- Validation card for the voting machine
 	public setCard: Card ==> ()
 		setCard(car) == (
-			validationCard := car;
+			vcard := car;
 			machine.setCards(car);
-		);
-	--	post machine.isValidCard(car);
+			vcardSet := true;
+		)
+	pre vcardSet = false
+	post machine.vcard = car 
+		and vcard = car
+		and vcardSet
+		and machine.vcardSet;
 			
 			
 	public setRegister: Election`Register ==> ()
