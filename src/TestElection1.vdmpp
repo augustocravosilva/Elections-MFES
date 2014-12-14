@@ -58,7 +58,12 @@ operations
 	voteScn(official, candidate) == (
 		official.machine.chooseCandidate(candidate);
 		official.machine.confirmChoice();
-	);
+	)
+	pre official.machine.status = <OnVoting> and
+		candidate in set dom official.machine.votes
+	post official.machine.status = <Ready>;
+		-- not suported
+		-- official.machine.votes = official.machine.votes~ + { candidate |-> official.machine.votes(candidate)+1}
 
 	-- Exceptional voting scenario in which the voter changes candidate option before saving
 	-- as described in section X of the report, covering requirement Y.
@@ -68,13 +73,25 @@ operations
 		official.machine.cleanSelection();
 		official.machine.chooseCandidate(candidate2);
 		official.machine.confirmChoice();
-	);
+	)
+	pre official.machine.status = <OnVoting> and
+		candidate1 in set dom official.machine.votes and
+		candidate2 in set dom official.machine.votes
+	post official.machine.status = <Ready>;
+		-- not suported
+		-- official.machine.votes = official.machine.votes~ + { candidate2 |-> official.machine.votes(candidate2)+1}
+	
 	
 	-- Exceptional voting scenario in which the voter votes in blank
 	-- as described in section X of the report, covering requirement Y.
 	public changeVoteScn: ElectoralOfficial ==> () 
 	changeVoteScn(official) == (
 		official.machine.confirmChoice();
-	);
+	)
+	pre official.machine.status = <OnVoting>
+	post official.machine.status = <Ready>;
+		-- not suported
+		-- official.machine.votes = official.machine.votes~ + { "blank" |-> official.machine.votes("blank")+1}
+	
 	
 end TestElection1
