@@ -35,5 +35,21 @@ operations
 	post forall off in set elems election.officials & off.vcardSet 	
 	   			and off.machine.vcardSet and off.vcard = off.machine.vcard
 	     		and off.machine.status = <Ready>;
+	     		
+	-- Normal scenario for validating and autorizing a voter,
+	-- as described in section X of the report, covering requirement Y.
+	public validateVoter: ElectoralOfficial * Election`Person ==> () 
+	validateVoter(official, person) == (
+		dcl vcard: ElectoralOfficial`Card := official.validatePerson(person);
+		assertEqual(vcard, official.vcard);
+		official.machine.validateCard(vcard); -- verificar se entra aqui ou retorna na linha anterior
+		assertEqual(vcard, official.machine.vcard);
+	)
+	pre person in set dom official.register and
+				official.register(person) = false and
+				official.machine.status = <Ready> 
+	post official.register(person) = true and
+				official.machine.status = <OnVoting> and
+				official.machine.choice = "blank";
 
 end TestElection1

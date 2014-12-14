@@ -79,7 +79,6 @@ operations
 		cand in set dom votes; 
  
  	-- "Submit" vote
- 	---------- TODO: candidato vazio again
 	-- R1: machine is on <OnVoting> status
 	public confirmChoice: () ==> ()
 		confirmChoice() == (
@@ -89,7 +88,6 @@ operations
  	pre status = <OnVoting> and
  		choice in set dom votes
  	post choice = "blank";
-
 
 	-- Add vote do candidate indicated in argument "candidate"
 	-- R1: "candidate" must be present in votes
