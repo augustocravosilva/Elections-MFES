@@ -6,20 +6,20 @@ types
 
 instance variables
 	public machine: VotingMachine;
-	private register: Election`Register;  ----- TODO: funçao de inicializaçao e blabla
-	public vcard: Card;
+	public register: Election`Register := { |-> };
+	public vcard: Card := mk_token(1);
 	public vcardSet: bool := false;
 	
 	
 operations
 
+	-- ElectoralOfficial class constructor
+	-- returns created object 
 	public ElectoralOfficial: () ==> ElectoralOfficial
 		ElectoralOfficial() == (
 			machine := new VotingMachine();
 			return self
-		);
-	
-	public 
+		); 
 	
 	-- Validate person
 	-- R1: "person" must be in electoral register
@@ -33,11 +33,11 @@ operations
 		register(person) = false
 	post register(person) = true;
 	
-	
 	-- Initialize voting machines		
 	public initializeMachines: VotingMachine ==> ()
 		initializeMachines(mach) ==
 			machine := mach;
+	---- TODO pre/post?	
 	
 	-- Validation card for the voting machine
 	public setCard: Card ==> ()
@@ -51,22 +51,11 @@ operations
 		and vcard = car
 		and vcardSet
 		and machine.vcardSet;
-			
-			
+	
+	-- Initialize register	
 	public setRegister: Election`Register ==> ()
 		setRegister(reg) ==
 			 register := reg;
+	---- TODO pre/post?		 
 			 
-	public getRegister: () ==> Election`Register
-		getRegister() ==
-			 return register;
-			 
-	public getMachine: () ==> VotingMachine
-		getMachine() ==
-			 return machine;
-			 
- 
-functions
-
-
 end ElectoralOfficial

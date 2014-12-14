@@ -11,7 +11,7 @@ instance variables
 	public electoralRegisters: seq of Register := [];
 	public officials: seq of ElectoralOfficial := [];
 	
-	-- a person is only in one register
+	-- invariant: a person is only in one register
 	--inv forall x in set elems electoralRegisters & forall person in set dom x &  not hasRepetitions(person);
 
 operations
@@ -20,33 +20,8 @@ operations
 	public Election: () ==> Election
 		Election() == 
 			return self;
-			
-	-- Electoral officials initialization
-	-- the officials should already have their machines
-	public setOfficials: seq of ElectoralOfficial ==> ()
-		setOfficials(off) == (
-			 officials := off;
-			 for all index in set inds officials 
-			 		do officials(index).setRegister(electoralRegisters(index));	
-			 initCodes();
-			 )
-	-- already has the electoralRegister defined
-	pre len electoralRegisters > 0 and
-		len electoralRegisters = len off;
-	--post forall i in set inds officials & officials(i).getRegister() =  electoralRegisters(i);
-			 
-			 
-			
-		--pre o número de oficials igual ao numero de electoralRegisters
-			
-			
-			
-			
-	-------- TODO: pensar noutra forma de fazer isto, sem usar o static (porque os cartoes de memoria nao sabem o estado uns dos outros)
-	--public finishElection: () ==> map Election1`Candidate to nat1
-		--finishElection() ==
-
 	
+	-- Register initialization
 	-- R1: every Person in argument "reg" must not had voted
 	-- R2: every Person in "electoralRegister" must not had voted
 	public setRegister: seq of Election`Register ==> ()
@@ -55,6 +30,23 @@ operations
 	pre forall voted in set elems reg & forall person in set rng voted & person = false
 	post forall voted in set elems electoralRegisters & forall person in set rng voted & person = false;
 	
+	-- Electoral officials initialization
+	-- the officials should already have their machines
+	-- R1: electoral register must be initialized
+	-- R2: size of electoral register must be equal to the size of argument "off"
+	-- R3: registers must be correctely distributed by electoral officials
+	public setOfficials: seq of ElectoralOfficial ==> ()
+		setOfficials(off) == (
+			 officials := off;
+			 for all index in set inds officials 
+			 		do officials(index).setRegister(electoralRegisters(index));	
+			 initCodes();
+			 )
+	pre len electoralRegisters > 0 and
+		len electoralRegisters = len off
+	post forall i in set inds officials & officials(i).register =  electoralRegisters(i);
+			 
+	-- Adding access cards to electoral officials
 	-- after initiating electoral officials and machines
 	public initCodes: () ==> ()
 		initCodes() == (
@@ -62,15 +54,21 @@ operations
 			 		do (dcl x: token := mk_token(1); 
 			 			official.setCard(x);
 			 ) 
-		);
+		)
+		post forall off in set elems officials & off.vcardSet=true; -- TODO pre/post
 		
-		--post forall x in set elems officials & x.getMachine();
 		
+		-- Turn on voting machines
 		public turnOnMachines: () ==> ()
 		turnOnMachines() == (
 			for all official in set elems officials do  
 			 			official.machine.turnOn(official.vcard);
 		);
+		-- pre/post TODO
+					
+	-------- TODO: pensar noutra forma de fazer isto
+	--public finishElection: () ==> map Election1`Candidate to nat1
+		--finishElection() ==
 
 functions
 		

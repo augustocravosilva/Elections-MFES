@@ -34,6 +34,7 @@ operations
  	pre status = <Off>
  	post status = <Off> and vcardSet;
  	
+ 	-- Turn on the machine
  	public turnOn: ElectoralOfficial`Card ==> ()
  		turnOn(vcard1) == (
  			status := <Ready>
@@ -42,14 +43,11 @@ operations
  		and status = <Off>
  	post status = <Ready>;
  	
- 	
- 	
  	-- Candidates initialization
 	-- R1: all candidates in argument "candidates" must have 0 votes
 	public setCandidates: map Election`Candidate to nat ==> ()
 		setCandidates(candidates) ==
-			votes := votes ++ candidates
-		-- votes has already blank option
+			votes := votes ++ candidates --votes has already blank option
 	pre card dom votes = 1 and
 		-- all candidates have 0 votes
 		forall vote in set rng votes & vote = 0 and
@@ -62,7 +60,6 @@ operations
  	
  	-- Machine ready to receive vote
  	-- R1: before operation, status must be <Ready> 
- 	--------- TODO: recebe-se um cartao que a pessoa recebeu e ve-se se � valido ou nao
 	public validateCard: ElectoralOfficial`Card ==> ()
 		validateCard(vcard1) == atomic (
 			status := <OnVoting>;
@@ -72,7 +69,6 @@ operations
 		vcard1 = vcard
 	post status = <OnVoting>;
 		
-	
 	-- Select candidate
 	-- R1: machine is on <OnVoting> status
 	-- R2: argument "cand" is a valid candidate (is on memory card)
@@ -117,15 +113,6 @@ operations
 			choice := "blank"
  	pre status = <OnVoting>;
  	
- 	-- Give up on voting
-	-- R1: machine is on <OnVoting> status
- 	public cancelVote: () ==> ()
- 		cancelVote() == (
- 			choice := "blank";
- 			status := <Ready>
- 			)
- 	pre status = <OnVoting>;
- 	
  	-- End election
  	---------- TODO: finalizar processo - termina a cena toda
  	---------- TODO: -> os dados estao no cartao de memoria <- precisa do cartao de acesso
@@ -136,12 +123,5 @@ operations
 			vcardSet := false;
 		)
 	pre status = <Ready>;
-
-	public isValidCard: ElectoralOfficial`Card ==> bool
-		isValidCard(c) == (
-			return c = vcard;
-		)
-	pre vcardSet
-	post vcard = vcard~;
 
 end VotingMachine
