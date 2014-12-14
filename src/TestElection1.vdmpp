@@ -12,8 +12,8 @@ operations
 	
 	-- Normal scenario for configuring the election,
 	-- as described in section X of the report, covering requirement Y.
-	public configureElection: seq of Election`Register * seq of ElectoralOfficial ==> Election
-	configureElection(register, officials) == (
+	public configureElectionScn: seq of Election`Register * seq of ElectoralOfficial ==> Election
+	configureElectionScn(register, officials) == (
 			dcl election : Election := new Election();
 			election.setRegister(register);
 			election.setOfficials(officials);  
@@ -25,8 +25,8 @@ operations
 
 	-- Normal scenario for configuring the ElectoralOfficials,
 	-- as described in section X of the report, covering requirement Y.
-	public configureOfficials: Election ==> ()
-	configureOfficials(election) == (
+	public configureOfficialsScn: Election ==> ()
+	configureOfficialsScn(election) == (
 			election.initCodes(); 
 			election.turnOnMachines();
 	)
@@ -38,8 +38,8 @@ operations
 	     		
 	-- Normal scenario for validating and autorizing a voter,
 	-- as described in section X of the report, covering requirement Y.
-	public validateVoter: ElectoralOfficial * Election`Person ==> () 
-	validateVoter(official, person) == (
+	public validateVoterScn: ElectoralOfficial * Election`Person ==> () 
+	validateVoterScn(official, person) == (
 		dcl vcard: ElectoralOfficial`Card := official.validatePerson(person);
 		assertEqual(vcard, official.vcard);
 		official.machine.validateCard(vcard); -- verificar se entra aqui ou retorna na linha anterior
@@ -51,5 +51,30 @@ operations
 	post official.register(person) = true and
 				official.machine.status = <OnVoting> and
 				official.machine.choice = "blank";
+				
+	-- Normal scenario for choosing a candidate and save the vote,
+	-- as described in section X of the report, covering requirement Y.
+	public voteScn: ElectoralOfficial * Election`Candidate ==> () 
+	voteScn(official, candidate) == (
+		official.machine.chooseCandidate(candidate);
+		official.machine.confirmChoice();
+	);
 
+	-- Exceptional voting scenario in which the voter changes candidate option before saving
+	-- as described in section X of the report, covering requirement Y.
+	public changeVoteScn: ElectoralOfficial * Election`Candidate * Election`Candidate ==> () 
+	changeVoteScn(official, candidate1, candidate2) == (
+		official.machine.chooseCandidate(candidate1);
+		official.machine.cleanSelection();
+		official.machine.chooseCandidate(candidate2);
+		official.machine.confirmChoice();
+	);
+	
+	-- Exceptional voting scenario in which the voter votes in blank
+	-- as described in section X of the report, covering requirement Y.
+	public changeVoteScn: ElectoralOfficial ==> () 
+	changeVoteScn(official) == (
+		official.machine.confirmChoice();
+	);
+	
 end TestElection1

@@ -83,22 +83,21 @@ operations
 	public confirmChoice: () ==> ()
 		confirmChoice() == (
 			status := <Ready>;
-			addVote(choice)
+			addVote()
 			)
  	pre status = <OnVoting> and
  		choice in set dom votes
  	post choice = "blank";
 
-	-- Add vote do candidate indicated in argument "candidate"
-	-- R1: "candidate" must be present in votes
-	-- R2: at the end, "candidate" must have one more vote
-	------ TODO: isto nao deve estar bem
-	private addVote: Election`Candidate ==> ()
-		addVote(candidate) == (
-			votes := votes ++ {candidate |-> votes(candidate)+1};
+	-- Add vote do candidate indicated in current choice
+	-- R1: candidate "choice" must be present in votes
+	-- R2: at the end, candidate "choice" must have one more vote
+	private addVote: () ==> ()
+		addVote() == (
+			votes := votes ++ {choice |-> votes(choice)+1};
 			choice := "blank";
 		)
-	pre candidate in set dom votes
+	pre choice in set dom votes
 	post dom votes = dom votes~;
 	-- not suported
 	-- post votes(candidate) = votes(candidate)~ + 1;
