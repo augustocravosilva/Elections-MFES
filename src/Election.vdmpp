@@ -40,7 +40,7 @@ operations
 			 officials := off;
 			 for all index in set inds officials 
 			 		do officials(index).setRegister(electoralRegisters(index));	
-			 initCodes();
+			 --initCodes();
 			 )
 	pre len electoralRegisters > 0 and
 		len electoralRegisters = len off
