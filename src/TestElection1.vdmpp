@@ -11,10 +11,11 @@ operations
 			dcl election : Election := new Election();
 			election.setRegister(register);
 			election.setOfficials(officials);  
+			--for all x in election.officials do for all y in x.machine do y.
 			return election;
 	)
 	post RESULT.electoralRegisters = register 
-	     and RESULT.officials = officials; -- nÃ£o tenho a certeza se vai dar porque o initCodes muda-lhe uma cena
+	     and RESULT.officials = officials;
 	    -- and forall off in set elems RESULT.officials & 
 
 	-- Normal scenario for configuring the ElectoralOfficials,
@@ -38,7 +39,7 @@ operations
 	validateVoterScn(official, person) == (
 		dcl vcard: ElectoralOfficial`Card := official.validatePerson(person);
 		assertEqual(vcard, official.vcard);
-		official.machine.validateCard(vcard); -- verificar se entra aqui ou retorna na linha anterior
+		official.machine.validateCard(vcard); 
 		assertEqual(vcard, official.machine.vcard);
 	)
 	pre person in set dom official.register and
@@ -80,8 +81,8 @@ operations
 	
 	-- Exceptional voting scenario in which the voter votes in blank
 	-- as described in section X of the report, covering requirement Y.
-	public changeVoteScn: ElectoralOfficial ==> () 
-	changeVoteScn(official) == (
+	public blankVoteScn: ElectoralOfficial ==> () 
+	blankVoteScn(official) == (
 		official.machine.confirmChoice();
 	)
 	pre official.machine.status = <OnVoting>
@@ -113,10 +114,10 @@ operations
 			dcl person1 : Election`Person := mk_token(1);
 			dcl elc : Election := configureElectionScn([{person1 |-> false}], [off]);
 			configureOfficialsScn(elc);
-			validateVoterScn(off, person1); -- usar a eleiçao ou a mesa??
+			validateVoterScn(off, person1);
 			voteScn(off, "blank");
 			);
 			
-		-- TODO: falta inicialização do cartao de memoria!!!!
+		-- TODO: falta inicializaï¿½ï¿½o do cartao de memoria!!!!
 			
 end TestElection1

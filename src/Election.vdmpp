@@ -10,6 +10,7 @@ instance variables
 	--registers for each electoralOfficial
 	public electoralRegisters: seq of Register := [];
 	public officials: seq of ElectoralOfficial := [];
+	-- candidatos
 	
 	-- invariant: a person is only in one register
 	--inv forall x in set elems electoralRegisters & forall person in set dom x &  not hasRepetitions(person);

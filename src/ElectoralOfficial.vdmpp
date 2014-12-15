@@ -23,12 +23,12 @@ operations
 	-- Validate person
 	-- R1: "person" must be in electoral register
 	-- R2: "person" must not had voted already
-	public validatePerson: Election`Person ==> Card
+	public validatePerson: Election`Person ==> [Card]
 		validatePerson(person) == (
 			register := register ++ { person |-> true };
 			return vcard;
 			)
-	pre person in set dom register and
+	pre person in set dom register and --TO
 		register(person) = false
 	post register(person) = true;
 	
