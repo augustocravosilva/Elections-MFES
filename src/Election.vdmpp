@@ -2,7 +2,7 @@ class Election
 
 types
 	public Person = token;
-	public Candidate = seq1 of char;
+	public Candidate = seq of char;
 	public Register = map Person to bool;
 
 
@@ -10,6 +10,7 @@ instance variables
 	--registers for each electoralOfficial
 	public electoralRegisters: seq of Register := [];
 	public officials: seq of ElectoralOfficial := [];
+	public candidates: set of Candidate := {};
 	
 	-- invariant: a person is only in one register
 	--inv forall x in set elems electoralRegisters & forall person in set dom x &  not hasRepetitions(person);
@@ -59,12 +60,38 @@ operations
 		pre forall off in set elems officials & off.vcardSet=false
 		post forall off in set elems officials & off.vcardSet;
 		
+	-- Adding candidates
+	public setCandidates: set of Candidate ==> ()
+		setCandidates(cand) == (
+			candidates := cand union {"blank"};
+			for all official in set elems officials do  
+			 			official.machine.setCandidates(candidates);
+		);
 		
+		public countVotes: () ==> map Candidate to nat
+		 countVotes() == (
+		 	dcl votes:map Candidate to nat := { |-> };
+		 	for all candidate in set candidates do
+			votes := votes munion {candidate |-> 0};
+		 	for all official in set elems officials do
+			 			for all candidate in set dom official.machine.votes do
+			 				votes := votes ++ {candidate |-> (votes(candidate) + official.machine.votes(candidate))};
+	 		return votes;
+		 )
+		 pre forall off in set elems officials & off.machine.status = <End>;
+				
 		-- Turn on voting machines
 		public turnOnMachines: () ==> ()
 		turnOnMachines() == (
 			for all official in set elems officials do  
 			 			official.machine.turnOn(official.vcard);
+		);
+		
+		-- Turn on voting machines
+		public endElection: () ==> ()
+		endElection() == (
+			for all official in set elems officials do  
+			 			official.machine.endVoting();
 		);
 		-- pre/post TODO
 					

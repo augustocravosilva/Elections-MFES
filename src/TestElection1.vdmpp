@@ -6,11 +6,12 @@ operations
 	
 	-- Normal scenario for configuring the election,
 	-- as described in section X of the report, covering requirement Y.
-	public configureElectionScn: seq of Election`Register * seq of ElectoralOfficial ==> Election
-	configureElectionScn(register, officials) == (
+	public configureElectionScn: seq of Election`Register * seq of ElectoralOfficial * set of Election`Candidate ==> Election
+	configureElectionScn(register, officials,candidates) == (
 			dcl election : Election := new Election();
 			election.setRegister(register);
-			election.setOfficials(officials);  
+			election.setOfficials(officials);
+			election.setCandidates(candidates);
 			return election;
 	)
 	post RESULT.electoralRegisters = register 
@@ -24,13 +25,13 @@ operations
 			election.initCodes(); 
 			election.turnOnMachines();
 	)
-	pre forall off in set elems election.officials & off.machine.status = <Off> and
+	pre forall off in set elems election.officials & (off.machine.status = <Off> and
 					not off.vcardSet and
-					not off.machine.vcardSet 
-	post forall off in set elems election.officials & off.vcardSet	
+					not off.machine.vcardSet)
+	post forall off in set elems election.officials & (off.vcardSet	
 	   			and off.machine.vcardSet
 	   			and off.vcard = off.machine.vcard
-	     		and off.machine.status = <Ready>;
+	     		and off.machine.status = <Ready>);
 	     		
 	-- Normal scenario for validating and autorizing a voter,
 	-- as described in section X of the report, covering requirement Y.
@@ -46,7 +47,7 @@ operations
 				official.machine.status = <Ready> 
 	post official.register(person) = true and
 				official.machine.status = <OnVoting> and
-				official.machine.choice = "blank";
+				official.machine.choice = "";
 				
 	-- Normal scenario for choosing a candidate and save the vote,
 	-- as described in section X of the report, covering requirement Y.
@@ -103,7 +104,7 @@ operations
 		testConf() == (
 			dcl off : ElectoralOfficial := new ElectoralOfficial();
 			dcl person1 : Election`Person := mk_token(1);
-			dcl elc : Election := configureElectionScn([{person1 |-> false}], [off]);
+			dcl elc : Election := configureElectionScn([{person1 |-> false}], [off],{"a","b"});
 			configureOfficialsScn(elc);
 			);
 			
@@ -111,10 +112,14 @@ operations
 		testVoteAndSave() == (
 			dcl off : ElectoralOfficial := new ElectoralOfficial();
 			dcl person1 : Election`Person := mk_token(1);
-			dcl elc : Election := configureElectionScn([{person1 |-> false}], [off]);
+			dcl elc : Election := configureElectionScn([{person1 |-> false}], [off],{"a","b"});
+			dcl votes : map Election`Candidate to nat := { |-> };
 			configureOfficialsScn(elc);
 			validateVoterScn(off, person1); -- usar a eleiçao ou a mesa??
-			voteScn(off, "blank");
+			voteScn(off, "a");
+			elc.endElection();
+			votes := elc.countVotes();
+			IO`print(votes);
 			);
 			
 		-- TODO: falta inicialização do cartao de memoria!!!!

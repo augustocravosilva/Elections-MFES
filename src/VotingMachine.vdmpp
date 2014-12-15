@@ -8,13 +8,13 @@ instance variables
 	public status : Status := <Off>; 
 	public vcard : ElectoralOfficial`Card := mk_token(1);
 	public vcardSet : bool := false;
-	public choice : Election`Candidate := "blank";
-	public votes: MemCard := { "blank" |-> 0};
+	public choice : Election`Candidate := "";
+	public votes: MemCard := { |-> };
 
 	------- TODO: o cartao de memoria nao muda
 	-- when machine is working it has a vcard set
 	inv status = <Ready> or status = <OnVoting> => vcardSet;
-	inv {choice} subset dom votes;
+	inv choice in set(dom votes union {""});
 	
 operations
  	-- Election class constructor
@@ -45,17 +45,15 @@ operations
  	post status = <Ready>;
  	
  	-- Candidates initialization
-	-- R1: all candidates in argument "candidates" must have 0 votes
-	public setCandidates: map Election`Candidate to nat ==> ()
-		setCandidates(candidates) ==
-			votes := votes ++ candidates --votes has already blank option
-	pre card dom votes = 1 and
-		-- all candidates have 0 votes
-		forall vote in set rng votes & vote = 0 and
+	public setCandidates: set of Election`Candidate ==> ()
+		setCandidates(candidates) == (
+			for all candidate in set candidates do
+			votes := votes munion {candidate |-> 0}
+			)
+	pre
 		-- machine is still off
 		status = <Off>
-		-- votes has so many candidates as candidates plus the blank candidate
-	post card dom votes = card dom candidates + 1 and
+	post
 		-- all candidates have 0 votes
 		forall vote in set rng votes & vote = 0;
  	
@@ -64,7 +62,7 @@ operations
 	public validateCard: ElectoralOfficial`Card ==> ()
 		validateCard(vcard1) == atomic (
 			status := <OnVoting>;
-			choice := "blank"
+			choice := ""
 			)
 	pre status = <Ready> and
 		vcard1 = vcard
@@ -88,7 +86,7 @@ operations
 			)
  	pre status = <OnVoting> and
  		choice in set dom votes
- 	post choice = "blank";
+ 	post choice = "";
 
 	-- Add vote do candidate indicated in current choice
 	-- R1: candidate "choice" must be present in votes
@@ -96,7 +94,7 @@ operations
 	private addVote: () ==> ()
 		addVote() == (
 			votes := votes ++ {choice |-> votes(choice)+1};
-			choice := "blank";
+			choice := "";
 		)
 	pre choice in set dom votes
 	post dom votes = dom votes~;
@@ -108,7 +106,7 @@ operations
 	-- R1: machine is on <OnVoting> status
 	public cleanSelection: () ==> ()
 		cleanSelection() ==
-			choice := "blank"
+			choice := ""
  	pre status = <OnVoting>;
  	
  	-- End election
