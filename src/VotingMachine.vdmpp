@@ -99,8 +99,8 @@ operations
 	pre choice in set dom votes
 	post dom votes = dom votes~;
 	-- not suported
-	-- post votes(candidate) = votes(candidate)~ + 1;
-	
+	-- post votes = votes~ ++ { candidate |-> votes(candidate)~ + 1 };
+
 	
 	-- Change to "white" vote
 	-- R1: machine is on <OnVoting> status
@@ -119,5 +119,16 @@ operations
 			vcardSet := false;
 		)
 	pre status = <Ready>;
+	
+	
+	public initMemoryCard: MemCard ==> ()
+		initMemoryCard(memCard) == (
+			votes := votes ++ memCard;
+		)
+	pre forall candidate in set dom memCard & memCard(candidate) = 0
+	post votes = votes~ ++ memCard
+		and forall candidate in set dom votes & votes(candidate) = 0;
+	
+	
 
 end VotingMachine
