@@ -116,15 +116,5 @@ operations
 		)
 	pre status = <Ready>;
 	
-	
-	public initMemoryCard: MemCard ==> ()
-		initMemoryCard(memCard) == (
-			votes := votes ++ memCard;
-		)
-	pre forall candidate in set dom memCard & memCard(candidate) = 0
-	post votes = votes~ ++ memCard
-		and forall candidate in set dom votes & votes(candidate) = 0;
-	
-	
 
 end VotingMachine

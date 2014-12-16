@@ -99,10 +99,4 @@ operations
 	--public finishElection: () ==> map Election1`Candidate to nat1
 		--finishElection() ==
 
-functions
-		
-		 -- Checks if a sequence of elements of type @T has no duplicates
-	public hasRepetitions[@T](s: seq of @T) res: bool ==
-  	exists i, j in set inds s & i <> j and s(i) = s(j);
-			
 end Election
