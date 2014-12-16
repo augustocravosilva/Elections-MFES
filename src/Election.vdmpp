@@ -9,12 +9,15 @@ types
 instance variables
 	--registers for each electoralOfficial
 	public electoralRegisters: seq of Register := [];
+	private finalElectoralRegisters: seq of Register := [];
 	public officials: seq of ElectoralOfficial := [];
 	-- candidates
 	public candidates: set of Candidate := {};
 	
 	-- invariant: a person is only in one register
 	--inv forall x in set elems electoralRegisters & forall person in set dom x & ;
+
+inv card dom (merge elems electoralRegisters) = sumCountsMaps(electoralRegisters)
 
 operations
 	-- Election class constructor
@@ -66,7 +69,8 @@ operations
 			candidates := cand union {"blank"};
 			for all official in set elems officials do  
 			 			official.machine.setCandidates(candidates);
-		);
+		)
+		pre "blank" not in set cand;
 		
 		public countVotes: () ==> map Candidate to nat
 		 countVotes() == (
@@ -78,7 +82,8 @@ operations
 			 				votes := votes ++ {candidate |-> (votes(candidate) + official.machine.votes(candidate))};
 	 		return votes;
 		 )
-		 pre forall off in set elems officials & off.machine.status = <End>;
+		 pre forall off in set elems officials & off.machine.status = <End>
+		 post card dom ((merge elems finalElectoralRegisters):>{true}) = sum(RESULT);
 				
 		-- Turn on voting machines
 		public turnOnMachines: () ==> ()
@@ -90,13 +95,40 @@ operations
 		-- Turn on voting machines
 		public endElection: () ==> ()
 		endElection() == (
-			for all official in set elems officials do  
-			 			official.machine.endVoting();
+			for all index in set inds officials do(  
+			 			officials(index).machine.endVoting();
+			 			finalElectoralRegisters(index) := officials(index).register;)
 		);
 		-- pre/post TODO
+					
+		private sumMap:  map seq of char to nat ==> nat
+		sumMap(a) == (
+			dcl s:nat := 0;
+			for all x in set dom a do
+				s := s + a(x);
+			return s;	
+		);
+		
+		
+		functions
+    private sum: map seq of char to nat -> nat
+    sum(a) ==
+    ( let x in set dom a
+    	in let resto = dom a \ {x}
+    		in if resto = {} then a(x)
+    		else a(x) + sum(resto <: a)
+    );
+    
+    private sumCountsMaps: seq of Register -> nat
+    sumCountsMaps(a) ==
+    ( if a = [] then 0 else
+    	let h = hd a
+    	in let t = tl a 
+    		in if t = [] then card dom h
+    		else card dom h + sumCountsMaps(t)
+    );
 					
 	-------- TODO: pensar noutra forma de fazer isto
 	--public finishElection: () ==> map Election1`Candidate to nat1
 		--finishElection() ==
-
 end Election

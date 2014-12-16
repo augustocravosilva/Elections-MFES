@@ -101,8 +101,9 @@ operations
   public testAll: () ==> ()
   	testAll() == (
   		--testConf();
-  		--testVoteAndSave();
-  		testCountBeforeEnd();
+  		testVoteAndSave();
+  		--testCountBeforeEnd();
+  		
   );
 	
 	-- Test elections' configuration
@@ -136,7 +137,7 @@ operations
 			dcl person3 : Election`Person := mk_token(3);
 			dcl person4 : Election`Person := mk_token(4);
 			dcl person5 : Election`Person := mk_token(5);
-			dcl person6 : Election`Person := mk_token(5);
+			dcl person6 : Election`Person := mk_token(6);
 			dcl elc : Election := configureElectionScn([{person1 |-> false, person2 |-> false}, {person3 |-> false, person4 |-> false, person6 |-> false}, {person5 |-> false}], [off, off1, off2],{"a","b","c","d"});
 			dcl votes : map Election`Candidate to nat := { |-> };
 			configureOfficialsScn(elc);

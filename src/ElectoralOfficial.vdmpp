@@ -10,8 +10,6 @@ instance variables
 	public vcard: Card := mk_token(1);
 	public vcardSet: bool := false;
 	
-	
-	
 operations
 
 	-- ElectoralOfficial class constructor
@@ -50,6 +48,6 @@ operations
 	public setRegister: Election`Register ==> ()
 		setRegister(reg) ==
 			 register := reg;
-	---- TODO pre/post?		 
+	---- TODO pre/post?		
 			 
 end ElectoralOfficial
