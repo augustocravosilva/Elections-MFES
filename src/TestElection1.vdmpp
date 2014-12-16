@@ -100,8 +100,9 @@ operations
 	-- Entry point that runs all tests with valid inputs
   public testAll: () ==> ()
   	testAll() == (
-  		testConf();
-  		testVoteAndSave();
+  		--testConf();
+  		--testVoteAndSave();
+  		testCountBeforeEnd();
   );
 	
 	-- Test elections' configuration
@@ -163,6 +164,48 @@ operations
 			votes := elc.countVotes();
 			--assertEqual (off.machine.votes("a"), 2);
 			IO`print(votes);
+			);
+			
+			
+			/***** TEST CASES WITH INVALID INPUTS ******/
+	
+		-- Invalid test: trying to vote without being authorized before 
+		public testVoteUnauth: () ==> () 
+			testVoteUnauth() == (
+				dcl off : ElectoralOfficial := new ElectoralOfficial();
+				dcl person1 : Election`Person := mk_token(1);
+				dcl elc : Election := configureElectionScn([{person1 |-> false}], [off],{"a","b"});
+				configureOfficialsScn(elc);
+				
+				-- missing validateVoterScn(off, person1); 
+				voteScn(off, "a");
+			);
+		
+		-- Invalid test: trying to vote in a candidate not present in the election
+		public testVoteInvalidCandidate: () ==> () 
+		testVoteInvalidCandidate() == (
+			dcl off : ElectoralOfficial := new ElectoralOfficial();
+			dcl person1 : Election`Person := mk_token(1);
+			dcl elc : Election := configureElectionScn([{person1 |-> false}], [off],{"a","b"});
+			configureOfficialsScn(elc);
+			
+			validateVoterScn(off, person1); 
+			voteScn(off, "candidate");
+		);
+		
+		-- Invalid test: trying to count votes before ending election
+		public testCountBeforeEnd: () ==> () 
+			testCountBeforeEnd() == (
+				dcl off : ElectoralOfficial := new ElectoralOfficial();
+				dcl person1 : Election`Person := mk_token(1);
+				dcl elc : Election := configureElectionScn([{person1 |-> false}], [off],{"a","b"});
+				dcl votes : map Election`Candidate to nat := { |-> };
+				
+				configureOfficialsScn(elc);
+				validateVoterScn(off, person1); 
+				voteScn(off, "a");
+				-- missing elc.endElection();
+				votes := elc.countVotes();
 			);
 			
 end TestElection1
