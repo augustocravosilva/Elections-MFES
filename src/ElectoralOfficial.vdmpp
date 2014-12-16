@@ -11,6 +11,7 @@ instance variables
 	public vcardSet: bool := false;
 	
 	
+	
 operations
 
 	-- ElectoralOfficial class constructor

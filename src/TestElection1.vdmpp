@@ -12,6 +12,8 @@ operations
 			election.setRegister(register);
 			election.setOfficials(officials);
 			election.setCandidates(candidates);
+			
+			--TODO - if you wish check if all person is different
 			--for all x in election.officials do for all y in x.machine do y.
 			return election;
 	)
@@ -101,28 +103,48 @@ operations
   		testVoteAndSave();
   );
 	
+	-- Test elections' configuration
+	-- use case 1 and 2
+	-- configure election with 3 ElectoralOfficials, 5 people and 4 candidates
 	public testConf: () ==> () 
 		testConf() == (
 			dcl off : ElectoralOfficial := new ElectoralOfficial();
+			dcl off1 : ElectoralOfficial := new ElectoralOfficial();
+			dcl off2 : ElectoralOfficial := new ElectoralOfficial();
 			dcl person1 : Election`Person := mk_token(1);
-			dcl elc : Election := configureElectionScn([{person1 |-> false}], [off],{"a","b"});
+			dcl person2 : Election`Person := mk_token(2);
+			dcl person3 : Election`Person := mk_token(3);
+			dcl person4 : Election`Person := mk_token(4);
+			dcl person5 : Election`Person := mk_token(5);
+			dcl elc : Election := configureElectionScn([{person1 |-> false, person2 |-> false}, {person3 |-> false, person4 |-> false}, {person5 |-> false}], [off, off1, off2],{"a","b","c","d"});
 			configureOfficialsScn(elc);
+	
+			for all official in set elems elc.officials do
+				assertEqual(dom official.machine.votes, {"a","b","blank","c","d"});
 			);
-			
+	
+	-- use cases 3 & 4 & 5
 	public testVoteAndSave: () ==> () 
 		testVoteAndSave() == (
 			dcl off : ElectoralOfficial := new ElectoralOfficial();
+			dcl off1 : ElectoralOfficial := new ElectoralOfficial();
+			dcl off2 : ElectoralOfficial := new ElectoralOfficial();
 			dcl person1 : Election`Person := mk_token(1);
-			dcl elc : Election := configureElectionScn([{person1 |-> false}], [off],{"a","b"});
+			dcl person2 : Election`Person := mk_token(2);
+			dcl person3 : Election`Person := mk_token(3);
+			dcl person4 : Election`Person := mk_token(4);
+			dcl person5 : Election`Person := mk_token(5);
+			dcl elc : Election := configureElectionScn([{person1 |-> false, person2 |-> false}, {person3 |-> false, person4 |-> false}, {person5 |-> false}], [off, off1, off2],{"a","b","c","d"});
 			dcl votes : map Election`Candidate to nat := { |-> };
 			configureOfficialsScn(elc);
-			validateVoterScn(off, person1); -- usar a eleiçao ou a mesa??
+			
+			
+			validateVoterScn(off, person1); 
 			voteScn(off, "a");
 			elc.endElection();
 			votes := elc.countVotes();
+			assertEqual (off.machine.votes("a"), 1);
 			IO`print(votes);
 			);
-			
-		-- TODO: falta inicializaï¿½ï¿½o do cartao de memoria!!!!
 			
 end TestElection1

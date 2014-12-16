@@ -13,8 +13,11 @@ instance variables
 
 	------- TODO: o cartao de memoria nao muda
 	-- when machine is working it has a vcard set
-	inv status = <Ready> or status = <OnVoting> => vcardSet;
+	inv (status = <Ready> or status = <OnVoting>) => vcardSet;
+	-- the choice must be valid
 	inv choice in set(dom votes union {""});
+	-- if choice not empty state = <onVoting>
+	inv choice <> "" => status = <OnVoting>;
 	
 operations
  	-- Election class constructor
@@ -77,31 +80,24 @@ operations
 	pre status = <OnVoting> and
 		cand in set dom votes; 
  
- 	-- "Submit" vote
+ -- Add vote do candidate indicated in current choice
 	-- R1: machine is on <OnVoting> status
+	-- R2: candidate "choice" must be present in votes
+	-- R3: at the end, candidate "choice" must have one more vote
 	public confirmChoice: () ==> ()
-		confirmChoice() == (
+		confirmChoice() == atomic(
 			status := <Ready>;
-			addVote()
+			votes := votes ++ {choice |-> votes(choice)+1};
+			choice := "";
 			)
  	pre status = <OnVoting> and
  		choice in set dom votes
- 	post choice = "";
-
-	-- Add vote do candidate indicated in current choice
-	-- R1: candidate "choice" must be present in votes
-	-- R2: at the end, candidate "choice" must have one more vote
-	private addVote: () ==> ()
-		addVote() == (
-			votes := votes ++ {choice |-> votes(choice)+1};
-			choice := "";
-		)
-	pre choice in set dom votes
-	post dom votes = dom votes~;
-	-- not suported
+ 	post choice = "" 
+ 		and dom votes = dom votes~;
+ 	-- not suported
 	-- post votes = votes~ ++ { candidate |-> votes(candidate)~ + 1 };
-
-	
+ 		
+ 		
 	-- Change to "white" vote
 	-- R1: machine is on <OnVoting> status
 	public cleanSelection: () ==> ()
