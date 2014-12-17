@@ -117,7 +117,7 @@ operations
 	
 	-- Test elections' configuration
 	-- use case 1 and 2
-	-- configure election with 3 ElectoralOfficials, 5 people and 4 candidates
+	-- configure election with 3 ElectoralOfficials, 5 voters and 4 candidates
 	public testConf: () ==> () 
 		testConf() == (
 			dcl off : ElectoralOfficial := new ElectoralOfficial();
@@ -233,7 +233,7 @@ operations
 				configureOfficialsScn(elc);
 				validateVoterScn(off, person1); 
 				voteScn(off, "a");
-				-- missing elc.endElection();
+				-- missing elc.endVoting();
 				votes := elc.countVotes();
 			);
 			
