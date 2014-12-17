@@ -9,7 +9,7 @@ instance variables
 	public register: Election`Register := { |-> };
 	public vcard: Card := mk_token(1);
 	public vcardSet: bool := false;
-	
+		
 operations
 
 	-- ElectoralOfficial class constructor
@@ -46,8 +46,8 @@ operations
 	
 	-- Initialize register	
 	public setRegister: Election`Register ==> ()
-		setRegister(reg) ==
-			 register := reg;
-	---- TODO pre/post?		
+		setRegister(reg) ==(
+			 register := reg;)
+	pre register = { |-> };
 			 
 end ElectoralOfficial

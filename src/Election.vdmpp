@@ -111,7 +111,7 @@ operations
 		
 		
 		functions
-    private sum: map seq of char to nat -> nat
+    private sum: map ? to nat -> nat
     sum(a) ==
     ( let x in set dom a
     	in let resto = dom a \ {x}
@@ -119,7 +119,7 @@ operations
     		else a(x) + sum(resto <: a)
     );
     
-    private sumCountsMaps: seq of Register -> nat
+    private sumCountsMaps: seq of map ? to ? -> nat
     sumCountsMaps(a) ==
     ( if a = [] then 0 else
     	let h = hd a
