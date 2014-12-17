@@ -15,7 +15,9 @@ instance variables
 	public candidates: set of Candidate := {};
 	
 	-- invariant: a person is only in one register
-	inv card dom (merge elems electoralRegisters) = sumCountsMaps(electoralRegisters)
+	inv card dom (merge elems electoralRegisters) = sumCountsMaps(electoralRegisters);
+	-- invariant: there aren't repeated ElectoralOfficials
+	inv not exists i, j in set inds officials & i <> j and officials(i) = officials(j);
 
 operations
 	-- Election class constructor
@@ -70,7 +72,7 @@ operations
 		setCandidates(cand) == (
 			candidates := cand union {"blank"};
 			for all official in set elems officials do  
-			 			official.machine.setCandidates(candidates);
+			 			official.machine.setCandidates(candidates, official.vcard);
 		)
 	pre "blank" not in set cand
 	post forall official in set elems officials & dom official.machine.votes = cand union {"blank"};
@@ -85,8 +87,8 @@ operations
 		 	for all candidate in set candidates do
 				votes := votes munion {candidate |-> 0};
 		 	for all official in set elems officials do
-			 	for all candidate in set dom official.machine.votes do
-			 		votes := votes ++ {candidate |-> (votes(candidate) + official.machine.votes(candidate))};
+			 	for all candidate in set dom official.machine.getVotes(official.vcard) do
+			 		votes := votes ++ {candidate |-> (votes(candidate) + official.machine.getVotes(official.vcard)(candidate))};
 	 		return votes;
 		 )
 	pre forall off in set elems officials & off.machine.status = <End>
@@ -105,15 +107,24 @@ operations
 		
 	-- End voting machines
 	-- R1: all machines mustn't me turned off yet and nobody can be voting
-	-- R2: all machines should be in state <End> after the end of election
-	public endElection: () ==> ()
-		endElection() == (
+	-- R2: all machines should be in state <End> after the end of voting
+	public endVoting: () ==> ()
+		endVoting() == (
 			for all index in set inds officials do(  
-			 			officials(index).machine.endVoting();
-			 			finalElectoralRegisters(index) := officials(index).register;)
+			 	officials(index).machine.endVoting(officials(index).vcard);
+			 	finalElectoralRegisters(index) := officials(index).register;)
 		)
 	pre forall index in set inds officials & officials(index).machine.status = <Ready>
 	post forall index in set inds officials & officials(index).machine.status = <End>;
+	
+	-- End voting machines
+	-- R1: all machines should be in state <Off> after the end of election
+	public endElection: () ==> ()
+		endElection() == (
+			for all index in set inds officials do  
+			 	officials(index).machine.endElection(officials(index).vcard);
+		)
+	post forall index in set inds officials & officials(index).machine.status = <Off>;
 	
 functions
 		

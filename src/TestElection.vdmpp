@@ -187,7 +187,7 @@ operations
 			
 			alreadyVotedScn(off2, person5);
 			
-			elc.endElection();
+			elc.endVoting();
 			votes := elc.countVotes();
 			
 			assertEqual (off.machine.votes("a"), 2);
@@ -204,6 +204,7 @@ operations
 			assertEqual (votes("c"), 0);
 			assertEqual (votes("d"), 1);
 			IO`print(votes);
+			elc.endElection();
 			);
 			
 			

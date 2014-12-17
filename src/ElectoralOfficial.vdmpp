@@ -55,5 +55,7 @@ operations
 			 register := reg
 	pre forall person in set rng reg & not person and register = { |-> }
 	post forall person in set rng register & not person;
+	
+	
 			 
 end ElectoralOfficial

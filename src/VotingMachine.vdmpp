@@ -41,25 +41,28 @@ operations
  	
  	-- Turn on the voting machine
  	-- R1: the access card used must be equal to the one that machine accepts
- 	-- R2: voting machine must be on <Off> state
+ 	-- R2: memory card must be already inserted
+ 	-- R3: voting machine must be on <Off> state
  	public turnOn: ElectoralOfficial`Card ==> ()
  		turnOn(vcard1) == (
  			status := <Ready>
  	)
  	pre vcard1 = vcard
+ 		and card dom votes > 0
  		and status = <Off>;
- 	--post status = <Ready>;
  	
  	-- Candidates votes initialization
  	-- R1: voting machine must be on <Off> state
- 	-- R2: initially, all candidates must have zero votes 
-	public setCandidates: set of Election`Candidate ==> ()
-		setCandidates(candidates) == (
+ 	-- R2: there isn't any memory card inserted yet
+ 	-- R3: initially, all candidates must have zero votes 
+	public setCandidates: set of Election`Candidate * ElectoralOfficial`Card ==> ()
+		setCandidates(candidates, vcard1) == (
 			for all candidate in set candidates do
 				votes := votes munion {candidate |-> 0}
 			)
-	pre
-		status = <Off>
+	pre vcard1 = vcard
+		and status = <Off>
+		and card dom votes = 0
 	post
 		forall vote in set rng votes & vote = 0;
  	
@@ -108,14 +111,36 @@ operations
 			choice := ""
  	pre status = <OnVoting>;
  	
- 	-- End election
+ 	-- End voting 
+ 	-- R1: must insert the valid validation card
  	-- R1: machine is on <Ready> status
-	public endVoting: () ==> ()
-		endVoting() == (
+	public endVoting: ElectoralOfficial`Card ==> ()
+		endVoting(vcard1) == (
 			status := <End>;
+		)
+	pre vcard = vcard1
+		and status = <Ready>;
+		
+	-- End election 
+ 	-- R1: must insert the valid validation card
+ 	-- R1: machine is on <End> status
+	public endElection: ElectoralOfficial`Card ==> ()
+		endElection(vcard1) == (
+			status := <Off>;
 			vcardSet := false;
 		)
-	pre status = <Ready>;
+	pre vcard = vcard1
+		and status = <End>;
+		
+	
+	-- Get memory card
+	-- R1: need to insert valid validation card
+	-- R2: Only when election ended is allowed	
+	public getVotes: ElectoralOfficial`Card ==> MemCard
+		getVotes(vcard1) ==
+			return votes
+	pre vcard = vcard1
+		and status = <End>;
 	
 
 end VotingMachine
