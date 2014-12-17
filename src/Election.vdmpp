@@ -15,9 +15,7 @@ instance variables
 	public candidates: set of Candidate := {};
 	
 	-- invariant: a person is only in one register
-	--inv forall x in set elems electoralRegisters & forall person in set dom x & ;
-
-inv card dom (merge elems electoralRegisters) = sumCountsMaps(electoralRegisters)
+	inv card dom (merge elems electoralRegisters) = sumCountsMaps(electoralRegisters)
 
 operations
 	-- Election class constructor

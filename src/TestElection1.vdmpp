@@ -100,10 +100,10 @@ operations
 	-- Entry point that runs all tests with valid inputs
   public testAll: () ==> ()
   	testAll() == (
-  		--testConf();
+  		testConf();
   		testVoteAndSave();
   		--testCountBeforeEnd();
-  		testDuplicatePerson();
+  		--testDuplicatePerson();
   		
   );
 	
@@ -164,7 +164,21 @@ operations
 			
 			elc.endElection();
 			votes := elc.countVotes();
-			--assertEqual (off.machine.votes("a"), 2);
+			
+			assertEqual (off.machine.votes("a"), 2);
+			
+			assertEqual (off1.machine.votes("a"), 1);
+			assertEqual (off1.machine.votes("b"), 1);
+			assertEqual (off1.machine.votes("blank"), 1);
+			
+			assertEqual (off2.machine.votes("d"), 1);
+			
+			
+			assertEqual (votes("a"), 3);
+			assertEqual (votes("b"), 1);
+			assertEqual (votes("blank"), 1);
+			assertEqual (votes("c"), 0);
+			assertEqual (votes("d"), 1);
 			IO`print(votes);
 			);
 			
