@@ -27,8 +27,8 @@ operations
  			);
  	
  	-- Initialize memory and validation cards
- 	-- R1: before operation, status must be <Off>
- 	-- card must not been entered yet
+ 	-- R1: before operation, status must be <Off> and card must not been entered yet
+ 	-- R2: after the operation, machine status must still be <Off> and card must be entered
  	public setCards: ElectoralOfficial`Card ==> ()
  		setCards(vcard1) == (
  			vcard := vcard1;
@@ -39,7 +39,9 @@ operations
  	post status = <Off> and
  			vcardSet;
  	
- 	-- Turn on the machine
+ 	-- Turn on the voting machine
+ 	-- R1: the access card used must be equal to the one that machine accepts
+ 	-- R2: voting machine must be on <Off> state
  	public turnOn: ElectoralOfficial`Card ==> ()
  		turnOn(vcard1) == (
  			status := <Ready>
@@ -48,21 +50,22 @@ operations
  		and status = <Off>;
  	--post status = <Ready>;
  	
- 	-- Candidates initialization
+ 	-- Candidates votes initialization
+ 	-- R1: voting machine must be on <Off> state
+ 	-- R2: initially, all candidates must have zero votes 
 	public setCandidates: set of Election`Candidate ==> ()
 		setCandidates(candidates) == (
 			for all candidate in set candidates do
 				votes := votes munion {candidate |-> 0}
 			)
 	pre
-		-- machine is still off
 		status = <Off>
 	post
-		-- all candidates have 0 votes
 		forall vote in set rng votes & vote = 0;
  	
- 	-- Machine ready to receive vote
- 	-- R1: before operation, status must be <Ready> 
+ 	-- Validate access card and make machine ready to receive vote
+ 	-- R1: before operation, machine must be on <Ready> status
+ 	-- R2: access card must be valid
 	public validateCard: ElectoralOfficial`Card ==> ()
 		validateCard(vcard1) == atomic (
 			status := <OnVoting>;
@@ -72,7 +75,7 @@ operations
 		vcard1 = vcard;
 	--post status = <OnVoting>;
 		
-	-- Select candidate
+	-- Voter selects candidate
 	-- R1: machine is on <OnVoting> status
 	-- R2: argument "cand" is a valid candidate (is on memory card)
 	public chooseCandidate: Election`Candidate ==> ()
@@ -81,10 +84,11 @@ operations
 	pre status = <OnVoting> and
 		cand in set dom votes; 
  
- 	-- Add vote do candidate indicated in current choice
+ 	-- Add vote to candidate indicated in current choice
 	-- R1: machine is on <OnVoting> status
 	-- R2: candidate "choice" must be present in votes
-	-- R3: at the end, candidate "choice" must have one more vote
+	-- R3: candidates must not change
+	-- R4: at the end, candidate "choice" must have one more vote 
 	public confirmChoice: () ==> ()
 		confirmChoice() == atomic(
 			status := <Ready>;
@@ -93,12 +97,11 @@ operations
 			)
  	pre status = <OnVoting> and
  		choice in set dom votes
- 	post choice = "" 
- 		and dom votes = dom votes~;
+ 	post dom votes = dom votes~;
  	-- not suported
 	-- post votes = votes~ ++ { candidate |-> votes(candidate)~ + 1 };
  		
-	-- Change to "white" vote
+	-- Clear choice made
 	-- R1: machine is on <OnVoting> status
 	public cleanSelection: () ==> ()
 		cleanSelection() ==
@@ -106,7 +109,6 @@ operations
  	pre status = <OnVoting>;
  	
  	-- End election
- 	---------- TODO: -> os dados estao no cartao de memoria <- precisa do cartao de acesso
  	-- R1: machine is on <Ready> status
 	public endVoting: () ==> ()
 		endVoting() == (
