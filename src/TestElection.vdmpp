@@ -245,7 +245,8 @@ operations
 			dcl person1 : Election`Person := mk_token(1);
 			dcl person2 : Election`Person := mk_token(1);
 			dcl elc : Election := configureElectionScn([{person1 |-> false}, {person2 |-> false}], [off, off1],{"a","b","c","d"});
-			assertTrue(true);	 -- WHATTT? xD
+			assertTrue(true);	 -- this will never run because inv will not hold
+			-- if this runs then test fails, because there should be an error
 		);
 		
 end TestElection
