@@ -56,10 +56,12 @@ operations
 	-- R2: in the end each official has a vcard
 	public initCodes: () ==> ()
 		initCodes() == (
+			dcl number : nat1 := 1;
 			for all official in set elems officials 
 			 		do (
-			 			dcl x: token := mk_token(1); 
+			 			dcl x: token := mk_token(number); 
 			 			official.setCard(x);
+			 			number := number + 1;
 			 ) 
 		)
 	pre forall off in set elems officials & off.vcardSet=false

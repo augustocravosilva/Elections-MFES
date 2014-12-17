@@ -47,7 +47,7 @@ operations
  		turnOn(vcard1) == (
  			status := <Ready>
  	)
- 	pre vcard1 = vcard
+ 	pre vcard = vcard1 and vcardSet
  		and card dom votes > 0
  		and status = <Off>;
  	
@@ -60,7 +60,7 @@ operations
 			for all candidate in set candidates do
 				votes := votes munion {candidate |-> 0}
 			)
-	pre vcard1 = vcard
+	pre vcard = vcard1 and vcardSet
 		and status = <Off>
 		and card dom votes = 0
 	post
@@ -75,7 +75,7 @@ operations
 			choice := ""
 			)
 	pre status = <Ready> and
-		vcard1 = vcard;
+		vcard = vcard1 and vcardSet;
 	--post status = <OnVoting>;
 		
 	-- Voter selects candidate
@@ -118,7 +118,7 @@ operations
 		endVoting(vcard1) == (
 			status := <End>;
 		)
-	pre vcard = vcard1
+	pre vcard = vcard1 and vcardSet
 		and status = <Ready>;
 		
 	-- End election 
@@ -129,7 +129,7 @@ operations
 			status := <Off>;
 			vcardSet := false;
 		)
-	pre vcard = vcard1
+	pre vcard = vcard1 and vcardSet
 		and status = <End>;
 		
 	
@@ -139,7 +139,7 @@ operations
 	public getVotes: ElectoralOfficial`Card ==> MemCard
 		getVotes(vcard1) ==
 			return votes
-	pre vcard = vcard1
+	pre vcard = vcard1 and vcardSet
 		and status = <End>;
 	
 
