@@ -2,6 +2,8 @@ class TestElection is subclass of MyTestCase
 
 operations
 
+	-- TODO: corrigir -> as described in section X of the report, covering requirement Y
+
  	/***** USE CASE SCENARIOS ******/
 	
 	-- Normal scenario for configuring the election,
@@ -256,7 +258,7 @@ operations
 			dcl person1 : Election`Person := mk_token(1);
 			dcl person2 : Election`Person := mk_token(1);
 			dcl elc : Election := configureElectionScn([{person1 |-> false}, {person2 |-> false}], [off, off1],{"a","b","c","d"});
-			assertTrue(true);	 -- WHATTT? xD
+			assertTrue(true);
 		);
 		
 end TestElection
