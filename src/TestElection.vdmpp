@@ -112,12 +112,13 @@ operations
   public testAll: () ==> ()
   	testAll() == (
   		testConf();
-  		testVoteAndSave();		
+  		testCompleteElection();		
   );
 	
 	-- Test elections' configuration
 	-- use case 1 and 2
 	-- configure election with 3 ElectoralOfficials, 5 voters and 4 candidates
+	-- Testing scenarios: configureOfficialsScn
 	public testConf: () ==> () 
 		testConf() == (
 			dcl off : ElectoralOfficial := new ElectoralOfficial();
@@ -135,9 +136,19 @@ operations
 				assertEqual(dom official.machine.votes, {"a","b","blank","c","d"});
 			);
 	
+	-- Test full election scenario
 	-- use cases 3 & 4 & 5
-	public testVoteAndSave: () ==> () 
-		testVoteAndSave() == (
+	-- configure election with 3 ElectoralOfficials, 6 voters and 4 candidates
+	-- Testing scenarios:
+	--    - configureOfficialsScn
+	--    - validateVoterScn
+	--    - voteScn
+	--    - notInRegisterScn
+	--    - changeVoteScn
+	--    - blankVoteScn
+	--    - alreadyVotedScn
+	public testCompleteElection: () ==> () 
+		testCompleteElection() == (
 			dcl off : ElectoralOfficial := new ElectoralOfficial();
 			dcl off1 : ElectoralOfficial := new ElectoralOfficial();
 			dcl off2 : ElectoralOfficial := new ElectoralOfficial();
