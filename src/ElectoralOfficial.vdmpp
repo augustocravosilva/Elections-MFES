@@ -20,36 +20,42 @@ operations
 		); 
 	
 	-- Validate person
-	-- R1: "person" must be in electoral register
-	-- R2: "person" must not had voted already
+	-- R1: if person in register, after validation should me marked as he voted and the vcard
+	--    should be returned
+	-- R2: if person not in register or already voted he isn't allowed to vote and it is
+	--	  returned nil
 	public validatePerson: Election`Person ==> [Card]
 		validatePerson(person) == (
-			register := register ++ { person |-> true };
-			return vcard;
+			if person in set dom register and register(person) = false then (
+				register := register ++ { person |-> true };
+				return vcard;)
+			else
+				return nil;
 			)
-	pre person in set dom register and -------TODO
-		register(person) = false
-	post register(person) = true;
+	post person in set dom register => register(person) = true;
+	-- and person in set dom register and register(person)~ = false => RESULT <> nil; -- not supported
 	
-	-- Validation card for the voting machine
+	-- Validation card for the voting machine is set
+	-- R1: vCard must not yet been set
+	-- R2: machine's card must be set and equal to electoralOfficial's card
 	public setCard: Card ==> ()
 		setCard(car) == (
 			vcard := car;
 			vcardSet := true;
 			machine.setCards(car);
 		)
-	pre vcardSet = false
+	pre not vcardSet
 	post machine.vcard = car 
 		and machine.vcardSet;
-		--and vcard = car
-		--and vcardSet;
 	
-	-- Initialize register	
+	-- Initialize register
+	-- R1: no one in register has voted yet
+	-- R2: during operation no one has voted 
 	public setRegister: Election`Register ==> ()
 		setRegister(reg) ==
 			 register := reg
-	pre forall person in set rng reg & person = false
-	post forall person in set rng register & person = false;
+	pre forall person in set rng reg & not person
+	post forall person in set rng register & not person;
 		
 			 
 end ElectoralOfficial
