@@ -2,12 +2,10 @@ class TestElection is subclass of MyTestCase
 
 operations
 
-	-- TODO: corrigir -> as described in section X of the report, covering requirement Y
-
  	/***** USE CASE SCENARIOS ******/
 	
 	-- Normal scenario for configuring the election,
-	-- as described in section X of the report, covering requirement Y.
+	-- as described in section 2.1 of the report, covering requirements R5,R11,R10.
 	public configureElectionScn: seq of Election`Register * seq of ElectoralOfficial * set of Election`Candidate ==> Election
 	configureElectionScn(register, officials,candidates) == (
 			dcl election : Election := new Election();
@@ -21,7 +19,7 @@ operations
 	     and RESULT.officials = officials;
 
 	-- Normal scenario for configuring the ElectoralOfficials,
-	-- as described in section X of the report, covering requirement Y.
+	-- as described in section 2.1 of the report, covering requirements R6,R7.
 	public configureOfficialsScn: Election ==> ()
 	configureOfficialsScn(election) == (
 			election.initCodes(); 
@@ -29,7 +27,7 @@ operations
 	);
 	     		
 	-- Normal scenario for validating and autorizing a voter,
-	-- as described in section X of the report, covering requirement Y.
+	-- as described in section 2.1 of the report, covering requirements R8,R12.
 	public validateVoterScn: ElectoralOfficial * Election`Person ==> () 
 	validateVoterScn(official, person) == (
 		dcl vcard: ElectoralOfficial`Card := official.validatePerson(person);
@@ -42,7 +40,7 @@ operations
 	post official.register(person) = true;
 				
 	-- Normal scenario for choosing a candidate and save the vote,
-	-- as described in section X of the report, covering requirement Y.
+	-- as described in section 2.1 of the report, covering requirements R7,R9,R10,R13.
 	public voteScn: ElectoralOfficial * Election`Candidate ==> () 
 	voteScn(official, candidate) == (
 		official.machine.chooseCandidate(candidate);
@@ -55,7 +53,7 @@ operations
 		-- official.machine.votes = official.machine.votes~ + { candidate |-> official.machine.votes(candidate)+1}
 
 	-- Exceptional voting scenario in which the voter changes candidate option before saving
-	-- as described in section X of the report, covering requirement Y.
+	-- as described in section 2.1 of the report, covering requirement R14.
 	public changeVoteScn: ElectoralOfficial * Election`Candidate * Election`Candidate ==> () 
 	changeVoteScn(official, candidate1, candidate2) == (
 		official.machine.chooseCandidate(candidate1);
@@ -71,7 +69,7 @@ operations
 		-- official.machine.votes = official.machine.votes~ + { candidate2 |-> official.machine.votes(candidate2)+1}
 	
 	-- Exceptional voting scenario in which the voter votes in blank
-	-- as described in section X of the report, covering requirement Y.
+	-- as described in section 2.1 of the report, covering requirement R10.
 	public blankVoteScn: ElectoralOfficial ==> () 
 	blankVoteScn(official) == (
 		official.machine.chooseCandidate("blank");
@@ -83,7 +81,7 @@ operations
 		-- official.machine.votes = official.machine.votes~ + { "blank" |-> official.machine.votes("blank")+1}
 	
 	-- Exceptional voting scenario in which the voter tries to vote again
-	-- as described in section X of the report, covering requirement Y.
+	-- as described in section 2.1 of the report, covering requirement R12.
 	public alreadyVotedScn: ElectoralOfficial * Election`Person ==> () 
 	alreadyVotedScn(official, person) == (
 		dcl vcard: [ElectoralOfficial`Card] := official.validatePerson(person);
@@ -96,7 +94,7 @@ operations
 				official.machine.status = <Ready>;
 				
 	-- Exceptional voting scenario in which a person isn't in register
-	-- as described in section X of the report, covering requirement Y.
+	-- as described in section 2.1 of the report, covering requirement R11.
 	public notInRegisterScn: ElectoralOfficial * Election`Person ==> () 
 	notInRegisterScn(official, person) == (
 		dcl vcard: [ElectoralOfficial`Card] := official.validatePerson(person);
