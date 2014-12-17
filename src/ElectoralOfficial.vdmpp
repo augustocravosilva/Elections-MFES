@@ -9,8 +9,7 @@ instance variables
 	public register: Election`Register := { |-> };
 	public vcard: Card := mk_token(1);
 	public vcardSet: bool := false;
-	
-	
+
 operations
 	-- ElectoralOfficial class constructor
 	-- returns created object 
@@ -54,8 +53,7 @@ operations
 	public setRegister: Election`Register ==> ()
 		setRegister(reg) ==
 			 register := reg
-	pre forall person in set rng reg & not person
+	pre forall person in set rng reg & not person and register = { |-> }
 	post forall person in set rng register & not person;
-		
 			 
 end ElectoralOfficial

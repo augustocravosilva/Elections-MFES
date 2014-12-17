@@ -118,7 +118,7 @@ operations
 functions
 		
 	-- sums the rng of a map	
-  private sum: map seq of char to nat -> nat
+    private sum: map ? to nat -> nat
     sum(a) ==
     ( let x in set dom a
     	in let resto = dom a \ {x}
@@ -127,7 +127,7 @@ functions
     );
     
   -- counts how many people there is in register's seq
-  private sumCountsMaps: seq of Register -> nat
+    private sumCountsMaps: seq of map ? to ? -> nat
     sumCountsMaps(a) ==
     ( if a = [] then 0 else
     	let h = hd a
