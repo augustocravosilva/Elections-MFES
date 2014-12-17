@@ -5,24 +5,23 @@ operations
  	/***** USE CASE SCENARIOS ******/
 	
 	-- Normal scenario for configuring the election,
-	-- as described in section 2.1 of the report, covering requirements R5,R11,R10.
-	public configureElectionScn: seq of Election`Register * seq of ElectoralOfficial * set of Election`Candidate ==> Election
-	configureElectionScn(register, officials,candidates) == (
+	-- as described in section 2.1 of the report, covering requirements R5,R11.
+	public configureElectionScn: seq of Election`Register * seq of ElectoralOfficial ==> Election
+	configureElectionScn(register, officials) == (
 			dcl election : Election := new Election();
 			election.setRegister(register);
 			election.setOfficials(officials);
-			election.setCandidates(candidates);
-			
 			return election;
 	)
 	post RESULT.electoralRegisters = register 
 	     and RESULT.officials = officials;
 
 	-- Normal scenario for configuring the ElectoralOfficials,
-	-- as described in section 2.1 of the report, covering requirements R6,R7.
-	public configureOfficialsScn: Election ==> ()
-	configureOfficialsScn(election) == (
+	-- as described in section 2.1 of the report, covering requirements R6,R7,R10.
+	public configureOfficialsScn: Election * set of Election`Candidate ==> ()
+	configureOfficialsScn(election, candidates) == (
 			election.initCodes(); 
+			election.setCandidates(candidates);
 			election.turnOnMachines();
 	);
 	     		
@@ -129,8 +128,8 @@ operations
 			dcl person3 : Election`Person := mk_token(3);
 			dcl person4 : Election`Person := mk_token(4);
 			dcl person5 : Election`Person := mk_token(5);
-			dcl elc : Election := configureElectionScn([{person1 |-> false, person2 |-> false}, {person3 |-> false, person4 |-> false}, {person5 |-> false}], [off, off1, off2],{"a","b","c","d"});
-			configureOfficialsScn(elc);
+			dcl elc : Election := configureElectionScn([{person1 |-> false, person2 |-> false}, {person3 |-> false, person4 |-> false}, {person5 |-> false}], [off, off1, off2]);
+			configureOfficialsScn(elc, {"a","b","c","d"});
 	
 			for all official in set elems elc.officials do
 				assertEqual(dom official.machine.votes, {"a","b","blank","c","d"});
@@ -158,9 +157,9 @@ operations
 			dcl person4 : Election`Person := mk_token(4);
 			dcl person5 : Election`Person := mk_token(5);
 			dcl person6 : Election`Person := mk_token(6);
-			dcl elc : Election := configureElectionScn([{person1 |-> false, person2 |-> false}, {person3 |-> false, person4 |-> false, person6 |-> false}, {person5 |-> false}], [off, off1, off2],{"a","b","c","d"});
+			dcl elc : Election := configureElectionScn([{person1 |-> false, person2 |-> false}, {person3 |-> false, person4 |-> false, person6 |-> false}, {person5 |-> false}], [off, off1, off2]);
 			dcl votes : map Election`Candidate to nat := { |-> };
-			configureOfficialsScn(elc);
+			configureOfficialsScn(elc, {"a","b","c","d"});
 			
 			validateVoterScn(off, person1); 
 			voteScn(off, "a");
@@ -208,14 +207,27 @@ operations
 			
 			
 		/***** TEST CASES WITH INVALID INPUTS ******/
+		
+		-- Entry point that runs tests with invalid inputs
+  -- Run one by one 
+  public testAllInvalidTests: () ==> ()
+  	testAllInvalidTests() == (
+  		testVoteUnauth();
+  		--testVoteInvalidCandidate();
+  		--testCountBeforeEnd();
+  		--testDuplicatePerson();
+  		--testInsertCardWrongCredentials();
+  		--testGetCardWrongCredentials();
+  		--testEndElectionWrongCredentials();
+  );
 	
 		-- Invalid test: trying to vote without being authorized before 
 		public testVoteUnauth: () ==> () 
 			testVoteUnauth() == (
 				dcl off : ElectoralOfficial := new ElectoralOfficial();
 				dcl person1 : Election`Person := mk_token(1);
-				dcl elc : Election := configureElectionScn([{person1 |-> false}], [off],{"a","b"});
-				configureOfficialsScn(elc);
+				dcl elc : Election := configureElectionScn([{person1 |-> false}], [off]);
+				configureOfficialsScn(elc, {"a","b"});
 				
 				-- missing validateVoterScn(off, person1); 
 				voteScn(off, "a");
@@ -226,8 +238,8 @@ operations
 		testVoteInvalidCandidate() == (
 			dcl off : ElectoralOfficial := new ElectoralOfficial();
 			dcl person1 : Election`Person := mk_token(1);
-			dcl elc : Election := configureElectionScn([{person1 |-> false}], [off],{"a","b"});
-			configureOfficialsScn(elc);
+			dcl elc : Election := configureElectionScn([{person1 |-> false}], [off]);
+			configureOfficialsScn(elc, {"a","b"});
 			
 			validateVoterScn(off, person1); 
 			voteScn(off, "candidate");
@@ -238,10 +250,10 @@ operations
 			testCountBeforeEnd() == (
 				dcl off : ElectoralOfficial := new ElectoralOfficial();
 				dcl person1 : Election`Person := mk_token(1);
-				dcl elc : Election := configureElectionScn([{person1 |-> false}], [off],{"a","b"});
+				dcl elc : Election := configureElectionScn([{person1 |-> false}], [off]);
 				dcl votes : map Election`Candidate to nat := { |-> };
 				
-				configureOfficialsScn(elc);
+				configureOfficialsScn(elc, {"a","b"});
 				validateVoterScn(off, person1); 
 				voteScn(off, "a");
 				-- missing elc.endVoting();
@@ -255,9 +267,58 @@ operations
 			dcl off1 : ElectoralOfficial := new ElectoralOfficial();
 			dcl person1 : Election`Person := mk_token(1);
 			dcl person2 : Election`Person := mk_token(1);
-			dcl elc : Election := configureElectionScn([{person1 |-> false}, {person2 |-> false}], [off, off1],{"a","b","c","d"});
+			dcl elc : Election := configureElectionScn([{person1 |-> false}, {person2 |-> false}], [off, off1]);
 			assertTrue(true);	 -- this will never run because inv will not hold
 			-- if this runs then test fails, because we're expecting an error
+		);
+		
+		-- Invalid test: trying to insert memory card with wrong valdation card
+		public testInsertCardWrongCredentials: () ==> () 
+			testInsertCardWrongCredentials() == (			
+			dcl officials : seq of ElectoralOfficial := [new ElectoralOfficial(), new ElectoralOfficial()];
+			dcl people : seq of map Election`Person to bool := [{mk_token(1) |-> false}, {mk_token(2) |-> false}];
+			dcl candidates: set of Election`Candidate := {"a","b","c","d"};
+			dcl vCard: ElectoralOfficial`Card := mk_token(10);
+			dcl election : Election := new Election();
+			
+			election.setRegister(people);
+			election.setOfficials(officials);
+			-- election.setCandidates(candidates);
+			
+			for all official in set elems election.officials do  
+			 	official.machine.setCandidates(candidates, vCard);
+		);
+		
+		-- Invalid test: trying to get memory card with wrong valdation card
+		public testGetCardWrongCredentials: () ==> () 
+			testGetCardWrongCredentials() == (			
+			dcl officials : seq of ElectoralOfficial := [new ElectoralOfficial(), new ElectoralOfficial()];
+			dcl people : seq of map Election`Person to bool := [{mk_token(1) |-> false}, {mk_token(2) |-> false}];
+			dcl candidates: set of Election`Candidate := {"a","b","c","d"};
+			dcl vCard: ElectoralOfficial`Card := mk_token(10);
+			dcl election : Election := configureElectionScn(people, officials);
+			configureOfficialsScn(election, candidates);
+			election.endVoting();
+			
+			 	
+			assertEqual(election.officials(1).machine.getVotes(vCard)("a"), 0);
+			
+		);
+		
+		-- Invalid test: trying to end election with wrong valdation card
+		public testEndElectionWrongCredentials: () ==> () 
+			testEndElectionWrongCredentials() == (			
+			dcl officials : seq of ElectoralOfficial := [new ElectoralOfficial(), new ElectoralOfficial()];
+			dcl people : seq of map Election`Person to bool := [{mk_token(1) |-> false}, {mk_token(2) |-> false}];
+			dcl candidates: set of Election`Candidate := {"a","b","c","d"};
+			dcl vCard: ElectoralOfficial`Card := mk_token(10);
+			dcl election : Election := configureElectionScn(people, officials);
+			configureOfficialsScn(election, candidates);
+			election.endVoting();
+			
+			for all official in set elems election.officials do   
+			 	official.machine.endElection(vCard);
+			
 		);
 		
 end TestElection
