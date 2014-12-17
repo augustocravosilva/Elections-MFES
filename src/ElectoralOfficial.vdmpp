@@ -10,8 +10,8 @@ instance variables
 	public vcard: Card := mk_token(1);
 	public vcardSet: bool := false;
 	
+	
 operations
-
 	-- ElectoralOfficial class constructor
 	-- returns created object 
 	public ElectoralOfficial: () ==> ElectoralOfficial
@@ -27,7 +27,7 @@ operations
 			register := register ++ { person |-> true };
 			return vcard;
 			)
-	pre person in set dom register and --TO
+	pre person in set dom register and -------TODO
 		register(person) = false
 	post register(person) = true;
 	
@@ -40,14 +40,16 @@ operations
 		)
 	pre vcardSet = false
 	post machine.vcard = car 
-		and machine.vcardSet
-		and vcard = car
-		and vcardSet;
+		and machine.vcardSet;
+		--and vcard = car
+		--and vcardSet;
 	
 	-- Initialize register	
 	public setRegister: Election`Register ==> ()
 		setRegister(reg) ==
-			 register := reg;
-	---- TODO pre/post?		
+			 register := reg
+	pre forall person in set rng reg & person = false
+	post forall person in set rng register & person = false;
+		
 			 
 end ElectoralOfficial

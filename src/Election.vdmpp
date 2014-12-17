@@ -58,8 +58,8 @@ operations
 			 			official.setCard(x);
 			 ) 
 		)
-		pre forall off in set elems officials & off.vcardSet=false
-		post forall off in set elems officials & off.vcardSet;
+	pre forall off in set elems officials & off.vcardSet=false
+	post forall off in set elems officials & off.vcardSet;
 		
 	-- Adding candidates
 	public setCandidates: set of Candidate ==> ()
@@ -68,65 +68,61 @@ operations
 			for all official in set elems officials do  
 			 			official.machine.setCandidates(candidates);
 		)
-		pre "blank" not in set cand;
+	pre "blank" not in set cand;
 		
-		public countVotes: () ==> map Candidate to nat
-		 countVotes() == (
-		 	dcl votes:map Candidate to nat := { |-> };
+	public countVotes: () ==> map Candidate to nat
+		countVotes() == (
+		 	dcl votes: map Candidate to nat := { |-> };
+		 	
 		 	for all candidate in set candidates do
-			votes := votes munion {candidate |-> 0};
-		 	for all official in set elems officials do
-			 			for all candidate in set dom official.machine.votes do
-			 				votes := votes ++ {candidate |-> (votes(candidate) + official.machine.votes(candidate))};
-	 		return votes;
-		 )
-		 pre forall off in set elems officials & off.machine.status = <End>
-		 post card dom ((merge elems finalElectoralRegisters):>{true}) = sum(RESULT);
+				votes := votes munion {candidate |-> 0};
 				
-		-- Turn on voting machines
-		public turnOnMachines: () ==> ()
+		 	for all official in set elems officials do
+			 	for all candidate in set dom official.machine.votes do
+			 		votes := votes ++ {candidate |-> (votes(candidate) + official.machine.votes(candidate))};
+			 		
+	 		return votes;
+		)
+	pre forall off in set elems officials & off.machine.status = <End>
+	post card dom ((merge elems finalElectoralRegisters):>{true}) = sum(RESULT);
+				
+	-- Turn on voting machines
+	public turnOnMachines: () ==> ()
 		turnOnMachines() == (
 			for all official in set elems officials do  
 			 			official.machine.turnOn(official.vcard);
-		);
+		)
+	pre forall off in set elems officials & off.machine.status = <Off>
+	post forall off in set elems officials & off.machine.status = <Ready>;
 		
-		-- Turn on voting machines
-		public endElection: () ==> ()
+	-- End election
+	public endElection: () ==> ()
 		endElection() == (
-			for all index in set inds officials do(  
-			 			officials(index).machine.endVoting();
-			 			finalElectoralRegisters(index) := officials(index).register;)
-		);
-		-- pre/post TODO
-					
-		private sumMap:  map seq of char to nat ==> nat
-		sumMap(a) == (
-			dcl s:nat := 0;
-			for all x in set dom a do
-				s := s + a(x);
-			return s;	
-		);
+			for all index in set inds officials do (  
+			 	officials(index).machine.endVoting();
+			 	finalElectoralRegisters(index) := officials(index).register;)
+		)
+	pre forall off in set elems officials & off.machine.status = <Ready>
+	post forall off in set elems officials & off.machine.status = <End>;
+	
 		
-		
-		functions
-    private sum: map seq of char to nat -> nat
+functions
+
+   private sum: map seq of char to nat -> nat
     sum(a) ==
-    ( let x in set dom a
-    	in let resto = dom a \ {x}
-    		in if resto = {} then a(x)
-    		else a(x) + sum(resto <: a)
-    );
+	    ( let x in set dom a
+	    	in let resto = dom a \ {x}
+	    		in if resto = {} then a(x)
+	    		else a(x) + sum(resto <: a)
+	    );
     
-    private sumCountsMaps: seq of Register -> nat
+   private sumCountsMaps: seq of Register -> nat
     sumCountsMaps(a) ==
-    ( if a = [] then 0 else
-    	let h = hd a
-    	in let t = tl a 
-    		in if t = [] then card dom h
-    		else card dom h + sumCountsMaps(t)
-    );
+	    ( if a = [] then 0 else
+	    	let h = hd a
+	    	in let t = tl a 
+	    		in if t = [] then card dom h
+	    		else card dom h + sumCountsMaps(t)
+	    );
 					
-	-------- TODO: pensar noutra forma de fazer isto
-	--public finishElection: () ==> map Election1`Candidate to nat1
-		--finishElection() ==
 end Election
