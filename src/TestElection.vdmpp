@@ -13,13 +13,10 @@ operations
 			election.setOfficials(officials);
 			election.setCandidates(candidates);
 			
-			--TODO - if you wish check if all person is different
-			--for all x in election.officials do for all y in x.machine do y.
 			return election;
 	)
 	post RESULT.electoralRegisters = register 
 	     and RESULT.officials = officials;
-	    -- and forall off in set elems RESULT.officials & 
 
 	-- Normal scenario for configuring the ElectoralOfficials,
 	-- as described in section X of the report, covering requirement Y.
@@ -27,14 +24,7 @@ operations
 	configureOfficialsScn(election) == (
 			election.initCodes(); 
 			election.turnOnMachines();
-	)
-	pre forall off in set elems election.officials & (off.machine.status = <Off> and
-					not off.vcardSet and
-					not off.machine.vcardSet)
-	post forall off in set elems election.officials & (off.vcardSet	
-	   			and off.machine.vcardSet
-	   			and off.vcard = off.machine.vcard
-	     		and off.machine.status = <Ready>);
+	);
 	     		
 	-- Normal scenario for validating and autorizing a voter,
 	-- as described in section X of the report, covering requirement Y.
@@ -46,11 +36,8 @@ operations
 		assertEqual(vcard, official.machine.vcard);
 	)
 	pre person in set dom official.register and
-				official.register(person) = false and
-				official.machine.status = <Ready> 
-	post official.register(person) = true and
-				official.machine.status = <OnVoting> and
-				official.machine.choice = "";
+				official.register(person) = false
+	post official.register(person) = true;
 				
 	-- Normal scenario for choosing a candidate and save the vote,
 	-- as described in section X of the report, covering requirement Y.
@@ -80,7 +67,6 @@ operations
 	post official.machine.status = <Ready>;
 	-- not suported
 		-- official.machine.votes = official.machine.votes~ + { candidate2 |-> official.machine.votes(candidate2)+1}
-	
 	
 	-- Exceptional voting scenario in which the voter votes in blank
 	-- as described in section X of the report, covering requirement Y.
