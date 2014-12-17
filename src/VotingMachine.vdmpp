@@ -11,12 +11,11 @@ instance variables
 	public choice : Election`Candidate := "";
 	public votes: MemCard := { |-> };
 
-	------- TODO: o cartao de memoria nao muda
-	-- when machine is working it has a vcard set
+	-- invariant: when machine is working it has a vcard set
 	inv (status = <Ready> or status = <OnVoting>) => vcardSet;
-	-- the choice must be valid
+	-- invariant: the choice must be valid
 	inv choice in set(dom votes union {""});
-	-- if choice not empty state = <onVoting>
+	-- invariant: if choice not empty then state = <OnVoting>
 	inv choice <> "" => status = <OnVoting>;
 	
 operations
@@ -35,8 +34,10 @@ operations
  			vcard := vcard1;
  			vcardSet := true;
  	)
- 	pre status = <Off> and not vcardSet
- 	post status = <Off> and vcardSet;
+ 	pre status = <Off> and
+ 			not vcardSet
+ 	post status = <Off> and
+ 			vcardSet;
  	
  	-- Turn on the machine
  	public turnOn: ElectoralOfficial`Card ==> ()
@@ -44,14 +45,14 @@ operations
  			status := <Ready>
  	)
  	pre vcard1 = vcard
- 		and status = <Off>
- 	post status = <Ready>;
+ 		and status = <Off>;
+ 	--post status = <Ready>;
  	
  	-- Candidates initialization
 	public setCandidates: set of Election`Candidate ==> ()
 		setCandidates(candidates) == (
 			for all candidate in set candidates do
-			votes := votes munion {candidate |-> 0}
+				votes := votes munion {candidate |-> 0}
 			)
 	pre
 		-- machine is still off
@@ -68,8 +69,8 @@ operations
 			choice := ""
 			)
 	pre status = <Ready> and
-		vcard1 = vcard
-	post status = <OnVoting>;
+		vcard1 = vcard;
+	--post status = <OnVoting>;
 		
 	-- Select candidate
 	-- R1: machine is on <OnVoting> status
@@ -80,7 +81,7 @@ operations
 	pre status = <OnVoting> and
 		cand in set dom votes; 
  
- -- Add vote do candidate indicated in current choice
+ 	-- Add vote do candidate indicated in current choice
 	-- R1: machine is on <OnVoting> status
 	-- R2: candidate "choice" must be present in votes
 	-- R3: at the end, candidate "choice" must have one more vote
@@ -97,7 +98,6 @@ operations
  	-- not suported
 	-- post votes = votes~ ++ { candidate |-> votes(candidate)~ + 1 };
  		
- 		
 	-- Change to "white" vote
 	-- R1: machine is on <OnVoting> status
 	public cleanSelection: () ==> ()
@@ -106,7 +106,6 @@ operations
  	pre status = <OnVoting>;
  	
  	-- End election
- 	---------- TODO: finalizar processo - termina a cena toda
  	---------- TODO: -> os dados estao no cartao de memoria <- precisa do cartao de acesso
  	-- R1: machine is on <Ready> status
 	public endVoting: () ==> ()
