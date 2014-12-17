@@ -94,6 +94,31 @@ operations
 	-- not suported
 		-- official.machine.votes = official.machine.votes~ + { "blank" |-> official.machine.votes("blank")+1}
 	
+	-- Exceptional voting scenario in which the voter tries to vote again
+	-- as described in section X of the report, covering requirement Y.
+	public alreadyVotedScn: ElectoralOfficial * Election`Person ==> () 
+	alreadyVotedScn(official, person) == (
+		dcl vcard: [ElectoralOfficial`Card] := official.validatePerson(person);
+		assertEqual(vcard, nil);
+	)
+	pre person in set dom official.register and
+				official.register(person) = true and
+				official.machine.status = <Ready> 
+	post official.register(person) = true and
+				official.machine.status = <Ready>;
+				
+	-- Exceptional voting scenario in which a person isn't in register
+	-- as described in section X of the report, covering requirement Y.
+	public notInRegisterScn: ElectoralOfficial * Election`Person ==> () 
+	notInRegisterScn(official, person) == (
+		dcl vcard: [ElectoralOfficial`Card] := official.validatePerson(person);
+		assertEqual(vcard, nil);
+	)
+	pre person not in set dom official.register
+		and official.machine.status = <Ready> 
+	post official.machine.status = <Ready>;
+	
+	
 	
 	/***** TEST CASES WITH VALID INPUTS ******/
 	
@@ -146,6 +171,8 @@ operations
 			validateVoterScn(off, person2); 
 			voteScn(off, "a");
 			
+			notInRegisterScn(off, person3);
+			
 			validateVoterScn(off1, person3); 
 			changeVoteScn(off1, "b", "a");
 			
@@ -157,6 +184,8 @@ operations
 			
 			validateVoterScn(off1, person6); 
 			blankVoteScn(off1);
+			
+			alreadyVotedScn(off2, person5);
 			
 			elc.endElection();
 			votes := elc.countVotes();
@@ -176,6 +205,8 @@ operations
 			assertEqual (votes("d"), 1);
 			IO`print(votes);
 			);
+			
+			
 			
 			
 		/***** TEST CASES WITH INVALID INPUTS ******/
@@ -227,7 +258,7 @@ operations
 			dcl person1 : Election`Person := mk_token(1);
 			dcl person2 : Election`Person := mk_token(1);
 			dcl elc : Election := configureElectionScn([{person1 |-> false}, {person2 |-> false}], [off, off1],{"a","b","c","d"});
-			assertTrue(true);	
+			assertTrue(true);	 -- WHATTT? xD
 		);
 		
 end TestElection
