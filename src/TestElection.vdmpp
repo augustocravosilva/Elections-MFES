@@ -82,9 +82,9 @@ operations
 	-- Exceptional voting scenario in which the voter tries to vote again
 	-- as described in section 2.1 of the report, covering requirement R12.
 	public alreadyVotedScn: ElectoralOfficial * Election`Person ==> () 
-	alreadyVotedScn(official, person) == (
-		dcl vcard: [ElectoralOfficial`Card] := official.validatePerson(person);
-		assertEqual(vcard, nil);
+		alreadyVotedScn(official, person) == (
+			dcl vcard: [ElectoralOfficial`Card] := official.validatePerson(person);
+			assertEqual(vcard, nil);
 	)
 	pre person in set dom official.register and
 				official.register(person) = true and
@@ -95,9 +95,9 @@ operations
 	-- Exceptional voting scenario in which a person isn't in register
 	-- as described in section 2.1 of the report, covering requirement R11.
 	public notInRegisterScn: ElectoralOfficial * Election`Person ==> () 
-	notInRegisterScn(official, person) == (
-		dcl vcard: [ElectoralOfficial`Card] := official.validatePerson(person);
-		assertEqual(vcard, nil);
+		notInRegisterScn(official, person) == (
+			dcl vcard: [ElectoralOfficial`Card] := official.validatePerson(person);
+			assertEqual(vcard, nil);
 	)
 	pre person not in set dom official.register
 		and official.machine.status = <Ready> 
@@ -111,6 +111,8 @@ operations
   public testAll: () ==> ()
   	testAll() == (
   		testConf();
+  		testValidate2Times();
+  		testNotInRegister();
   		testCompleteElection();		
   );
 	
@@ -135,6 +137,56 @@ operations
 				assertEqual(dom official.machine.votes, {"a","b","blank","c","d"});
 			);
 	
+	-- Test trying to validate two times
+	-- most relevant use case: 3
+	-- Testing scenarios:
+	--    - configureOfficialsScn
+	--    - validateVoterScn
+	--    - voteScn
+	--    - alreadyVotedScn
+	public testValidate2Times: () ==> ()
+		testValidate2Times() == (
+			dcl off : ElectoralOfficial := new ElectoralOfficial();
+			dcl off1 : ElectoralOfficial := new ElectoralOfficial();
+			dcl person1 : Election`Person := mk_token(1);
+			dcl person2 : Election`Person := mk_token(2);
+			dcl elc : Election := configureElectionScn([{person1 |-> false}, {person2 |-> false}], [off, off1], {"a","b","c","d"});
+			dcl votes : map Election`Candidate to nat := { |-> };
+			configureOfficialsScn(elc);
+			
+			validateVoterScn(off, person1); 
+			voteScn(off, "a");
+			
+			alreadyVotedScn(off, person1);
+			elc.endVoting();
+			
+			votes := elc.countVotes();
+			assertEqual (votes("a"), 1);
+			assertEqual (votes("b"), 0);
+			assertEqual (votes("blank"), 0);
+			assertEqual (votes("c"), 0);
+			assertEqual (votes("d"), 0);
+			--IO`print(votes);
+			elc.endElection();
+		);
+	
+	-- Test full election scenario
+	-- use case 3
+	-- Testing scenarios:
+	--    - configureOfficialsScn
+	--    - notInRegisterScn
+	public testNotInRegister: () ==> ()
+		testNotInRegister() == (
+			dcl off : ElectoralOfficial := new ElectoralOfficial();
+			dcl person1 : Election`Person := mk_token(1);
+			dcl person2 : Election`Person := mk_token(2);
+			dcl elc : Election := configureElectionScn([{person1 |-> false}], [off], {"a","b","c","d"});
+			dcl votes : map Election`Candidate to nat := { |-> };
+			configureOfficialsScn(elc);
+			
+			notInRegisterScn(off, person2);
+		);
+		
 	-- Test full election scenario
 	-- use cases 3 & 4 & 5
 	-- configure election with 3 ElectoralOfficials, 6 voters and 4 candidates
@@ -202,9 +254,7 @@ operations
 			IO`print(votes);
 			elc.endElection();
 			);
-			
-			
-			
+	
 			
 		/***** TEST CASES WITH INVALID INPUTS ******/
 		
